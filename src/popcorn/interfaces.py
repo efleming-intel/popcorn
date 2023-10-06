@@ -55,31 +55,38 @@ class MDTable:
 class MDTables:
     def __init__(self):
         self._tables: list[MDTable] = []
-        self._active_sheet_index = -1
+        self._active_table_index = -1
 
     @property
     def active(self):
         try:
-            return self._sheets[self._active_sheet_index]
+            return self._tables[self._active_table_index]
         except IndexError:
             pass
 
     def create_sheet(self, title: str) -> MDTable:
         sheet = MDTable(title)
         self._tables.append(sheet)
-        self._active_sheet_index += 1
+        self._active_table_index += 1
         return sheet
 
     def save(self, filename: str):
         # combine temp sheets into one markdown file
-        if len(self._sheets) > 0:
-            with open(filename, "w") as file:
+        if len(self._tables) > 0:
+            with open(filename, "w") as out:
+                # generate table of contents
+                out.write("# " + filename + "\n\nContents:\n\n")
+                for table in self._tables:
+                    out.write('* [' + table.title + ']( #' + table.title + ' )\n')
+                out.write('\n')
+                # write data
                 for table in self._tables:
                     with open(table.filename, "r") as temp:
-                        file.write("## " + table.title + "\n")
-                        file.writelines(temp.readlines())
-                        file.write("\n\n")
+                        out.write("## " + table.title + "\n")
+                        out.writelines(temp.readlines())
+                        out.write("\n\n")
                     os.remove(table.filename)  # delete temp file
+                    out.write('\n')
 
 
 # csv interfaces
@@ -94,7 +101,7 @@ class CSVSheet:
 
     def append(self, row: list[str]):
         with open(self.filename, "a") as file:
-            file.write(",".join(row) + "\n")
+            file.write(",".join(str(i) for i in row) + "\n")
 
 
 class CSVArchive:

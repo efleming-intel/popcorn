@@ -27,7 +27,7 @@ def report_hotspots(
             print("\n")
     else:
         count = len(items)
-        if wb.active.title == "Sheet":  # current sheet is unused
+        if wb.active and wb.active.title == "Sheet":  # current sheet is unused
             ws = wb.active
             ws.title = _hotspots_sheet_name(items[0][0])
         else:

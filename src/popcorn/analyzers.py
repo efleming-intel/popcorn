@@ -10,7 +10,7 @@ def _hs(cs: Case) -> list[Event]:
 def hotspots(cs: list[Case]) -> dict[str, list[Event]]:
     hs: dict[str, list[Event]] = {}
     for case in cs:
-        hs[case.filename] = _hs(case)
+        hs[case.title] = _hs(case)
     return hs
 
 
@@ -29,5 +29,5 @@ def kernel_differences(cases: list[Case]) -> dict[str, list[tuple[Event, int]]]:
     kdiffs: dict[str, list[tuple[Event, int]]] = {}
     combos = combinations(cases, 2)
     for c in combos:
-        kdiffs[f"{c[0].filename}_{c[1].filename}"] = _kdiff(c[0], c[1])
+        kdiffs[f"{c[0].title}_{c[1].title}"] = _kdiff(c[0], c[1])
     return kdiffs

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import json
 import os
 
+def _add_quotes(s: str) -> str:
+    return ('\"'+s+'\"')
 
 @dataclass
 class Event:
@@ -34,7 +36,7 @@ class Event:
             self.ph,
             self.tid,
             self.pid,
-            self.name if not trunc_name else self.name[0:25],
+            _add_quotes(self.name if not trunc_name else self.name[0:25]),
             self.cat,
             self.ts,
             self.id,
@@ -45,9 +47,10 @@ class Event:
 
 class Case:
     def __init__(self, file, uniques=True, cat=None):
-        self.filename = os.path.basename(file)
+        self.filename : str = os.path.basename(file)
 
         trace_events: dict[str, Event] = {}
+
         with open(file, "r") as f:
             data = json.load(f)
             for item in data["traceEvents"]:
@@ -78,3 +81,7 @@ class Case:
 
     def __eq__(self, other):
         return self.filename == other.filename
+    
+    @property
+    def title(self) -> str:
+        return self.filename.removesuffix('.json')
