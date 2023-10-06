@@ -14,3 +14,4 @@ popcorn -h
 ## Dependencies
 
 - openpyxl
+- prettytable

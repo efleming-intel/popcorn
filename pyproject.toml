@@ -4,16 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "popcorn"
-authors = [
-    {name = "Ethan Fleming", email = "ethan.fleming@intel.com"},
-]
+authors = [{ name = "Ethan Fleming", email = "ethan.fleming@intel.com" }]
 description = "Cross-platform kernel trace analyzer"
 dynamic = ["version", "readme"]
 requires-python = ">=3.8"
 keywords = ["kernel", "analyzer", "hotspots", "trace", "log", "tool"]
-dependencies = [
-    "openpyxl"
-]
+dependencies = ["openpyxl", "prettytable"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Console",
@@ -22,7 +18,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: System :: Operating System Kernels",
-    "Topic :: Utilities" 
+    "Topic :: Utilities",
 ]
 
 [project.scripts]

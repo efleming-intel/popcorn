@@ -1,4 +1,5 @@
-__pycache__
-.venv
 build
+__pycache__
 popcorn.egg-info
+.venv
+.vscode

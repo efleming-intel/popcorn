@@ -1,41 +1,82 @@
 from openpyxl import Workbook
 
+from popcorn.interfaces import Kettle, MDTables, CSVArchive
 from popcorn.structures import Event
 
+
 def _hotspots_sheet_name(item_name: str) -> str:
-    return str("pops__"+item_name)
+    return str("pops__" + item_name)
+
 
 def _kernel_differences_sheet_name(item_name: str) -> str:
-    return str("kdiffs__"+item_name)
+    return str("kdiffs__" + item_name)
 
-def report_hotspots(result: dict[str, list[Event]], wb: Workbook):
+
+def report_hotspots(
+    result: dict[str, list[Event]], wb: Kettle | MDTables | Workbook | CSVArchive
+):
     items = list(result.items())
-    count = len(items)
-    if wb.active.title == "Sheet": # current sheet is unused
-        ws = wb.active
-        ws.title = _hotspots_sheet_name(items[0][0])
+    hotspot_header = ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
+    if isinstance(wb, Kettle):
+        for item in items:
+            wb.print_table(
+                title=_hotspots_sheet_name(item[0]),
+                fields=hotspot_header,
+                data=[event.row(trunc_name=True) for event in item[1]],
+            )
+            print("\n")
     else:
-        ws = wb.create_sheet(_hotspots_sheet_name(items[0][0]))
+        count = len(items)
+        if wb.active.title == "Sheet":  # current sheet is unused
+            ws = wb.active
+            ws.title = _hotspots_sheet_name(items[0][0])
+        else:
+            ws = wb.create_sheet(_hotspots_sheet_name(items[0][0]))
 
-    for i in range(0, count):
-        ws.append(['ph','tid','pid','name','cat','ts','id','dur','args_id']) # header
-        for event in items[i][1]:
-            ws.append([event.ph, event.tid, event.pid, event.name, event.cat, event.ts, event.id, event.dur, event.args_id])
-        if i < count - 1:
-            ws = wb.create_sheet(_hotspots_sheet_name(items[i+1][0]))
+        for i in range(0, count):
+            ws.append(hotspot_header)  # header
+            for event in items[i][1]:
+                ws.append(event.row())
+            if i < count - 1:
+                ws = wb.create_sheet(_hotspots_sheet_name(items[i + 1][0]))
 
-def report_kdiffs(result: dict[str, list[tuple[Event, int]]], wb: Workbook):
+
+def report_kdiffs(
+    result: dict[str, list[tuple[Event, int]]],
+    wb: Kettle | MDTables | Workbook | CSVArchive,
+):
     items = list(result.items())
-    count = len(items)
-    if wb.active.title == "Sheet": # current sheet is unused
-        ws = wb.active
-        ws.title = _kernel_differences_sheet_name(items[0][0])
+    kdiff_header = [
+        "diff",
+        "ph",
+        "tid",
+        "pid",
+        "name",
+        "cat",
+        "ts",
+        "id",
+        "dur",
+        "args_id",
+    ]
+    if isinstance(wb, Kettle):
+        for item in items:
+            wb.print_table(
+                title=_kernel_differences_sheet_name(item[0]),
+                fields=kdiff_header,
+                data=[([diff] + event.row(trunc_name=True)) for (event, diff) in item[1]],
+            )
+            print("\n")
     else:
-        ws = wb.create_sheet(_kernel_differences_sheet_name(items[0][0]))
+        count = len(items)
+        if wb.active.title == "Sheet":  # current sheet is unused
+            ws = wb.active
+            ws.title = _kernel_differences_sheet_name(items[0][0])
+        else:
+            ws = wb.create_sheet(_kernel_differences_sheet_name(items[0][0]))
 
-    for i in range(0, count):
-        ws.append(['diff','ph','tid','pid','name','cat','ts','id','dur','args_id']) # header
-        for (event, diff) in items[i][1]:
-            ws.append([diff, event.ph, event.tid, event.pid, event.name, event.cat, event.ts, event.id, event.dur, event.args_id])
-        if i < count - 1:
-            ws = wb.create_sheet(_kernel_differences_sheet_name(items[i+1][0]))
+        for i in range(0, count):
+            ws.append(kdiff_header)  # header
+            for event, diff in items[i][1]:
+                ws.append(([diff] + event.row()))
+            if i < count - 1:
+                ws = wb.create_sheet(_kernel_differences_sheet_name(items[i + 1][0]))
