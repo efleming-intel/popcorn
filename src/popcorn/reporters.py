@@ -9,7 +9,7 @@ def _hotspots_sheet_name(item_name: str) -> str:
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:
-    return str("kdiffs__" + item_name)
+    return str("kdiff__" + item_name)
 
 
 def report_hotspots(
@@ -41,7 +41,7 @@ def report_hotspots(
                 ws = wb.create_sheet(_hotspots_sheet_name(items[i + 1][0]))
 
 
-def report_kdiffs(
+def report_kdiff(
     result: dict[str, list[tuple[Event, int]]],
     wb: Kettle | MDTables | Workbook | CSVArchive,
 ):

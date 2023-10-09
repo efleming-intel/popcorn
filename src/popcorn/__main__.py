@@ -12,8 +12,8 @@ import sys
 
 from popcorn import __version__
 from popcorn.analyzers import hotspots, kernel_differences
-from popcorn.interfaces import Kettle, MDTables, CSVArchive
-from popcorn.reporters import report_hotspots, report_kdiffs
+from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
+from popcorn.reporters import report_hotspots, report_kdiff
 from popcorn.structures import Case
 
 
@@ -60,6 +60,22 @@ def main_cli() -> str | None:
         help="Use all possible analyzers on the files provided.",
     )
 
+    verbosity_args = parser.add_mutually_exclusive_group()
+    verbosity_args.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="give a detailed report (console output only)",
+        dest="verbose"
+    )
+    verbosity_args.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="give a minimal report (console output only)",
+        dest="quiet"
+    )
+
     parser.add_argument(
         "-cat", "--restrict-cat", type=str, help="e.g. -cat gpu_op", dest="category"
     )
@@ -70,7 +86,6 @@ def main_cli() -> str | None:
         dest="nu",
     )
     parser.add_argument(
-        "-v",
         "--version",
         action="version",
         version="%(prog)s {version}".format(version=__version__),
@@ -81,6 +96,12 @@ def main_cli() -> str | None:
     input_file_count = len(
         args.files
     )  # argparse will ensure at least one file is given
+
+    output_verbosity = Verbosity.STANDARD
+    if args.verbose:
+        output_verbosity = Verbosity.VERBOSE
+    elif args.quiet:
+        output_verbosity = Verbosity.QUIET
 
     # no analyzer (or all) specified -> find best analyzer given the input file count
     if (not args.a) or args.full_analysis:
@@ -114,7 +135,7 @@ def main_cli() -> str | None:
             args.o = args.o + "." + args.ot
             report = Workbook()
         case "console":
-            report = Kettle()
+            report = Kettle(output_verbosity)
         case "csv":
             report = CSVArchive()
         case "md":
@@ -127,12 +148,12 @@ def main_cli() -> str | None:
     match args.a:
         case "all":
             report_hotspots(hotspots(cases), report)
-            report_kdiffs(kernel_differences(cases), report)
+            report_kdiff(kernel_differences(cases), report)
         case "kdiff":
-            report_kdiffs(kernel_differences(cases), report)
+            report_kdiff(kernel_differences(cases), report)
         case "pops+kdiff":
             report_hotspots(hotspots(cases), report)
-            report_kdiffs(kernel_differences(cases), report)
+            report_kdiff(kernel_differences(cases), report)
         case "pops":
             report_hotspots(hotspots(cases), report)
         case _:  # default is just hotspots

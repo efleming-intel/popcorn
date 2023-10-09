@@ -1,10 +1,17 @@
+from enum import Enum
 from itertools import repeat
 import os
 
 from prettytable import PrettyTable
 
 
-# useful functions
+# useful classes and functions
+class Verbosity(Enum):
+    STANDARD = 0
+    VERBOSE = 1
+    QUIET = 2
+
+
 def _str2dash(s: str) -> str:
     # returns a string of dashes the same length as s
     return "".join(list(repeat("-", len(s))))
@@ -23,10 +30,33 @@ def _tablify_row(row: list[str]):
 
 # default console interface
 class Kettle:
+    def __init__(self, verbosity=Verbosity.STANDARD) -> None:
+        self.verbosity=verbosity
+
     def print_table(self, title: str, fields: list[str], data: list[list[str]]):
         table = PrettyTable(title=title, field_names=fields)
         table._max_table_width = os.get_terminal_size().columns
-        table.add_rows(data)
+
+        match self.verbosity:
+            case Verbosity.VERBOSE:
+                # add entire dataset
+                table.add_rows(data)
+            case Verbosity.QUIET:
+                # add only the top and bottom 5
+                if len(data) <= 10:
+                    table.add_rows(data)
+                else:
+                    interesting_data = data[:5] + data[-5:]
+                    table.add_rows(interesting_data)
+
+            case Verbosity.STANDARD:
+                # add only the top and bottom 25
+                if len(data) <= 50:
+                    table.add_rows(data)
+                else:
+                    interesting_data = data[:25] + data[-25:]
+                    table.add_rows(interesting_data)
+        
         print(table)
     
     def save(self, _):
