@@ -49,18 +49,42 @@ class Case:
     def __init__(self, file, uniques=True, cat=None):
         self.filename : str = os.path.basename(file)
 
-        trace_events: dict[str, Event] = {}
+        if uniques:
+            trace_events: dict[str, Event] = {}
 
-        with open(file, "r") as f:
-            data = json.load(f)
-            for item in data["traceEvents"]:
-                same_category = (item["cat"] == cat) if "cat" in item else False
-                if (cat and same_category) or (not cat):  # category specific search
-                    if uniques and (
-                        item["name"] in trace_events and "dur" in item
-                    ):  # collapse uniques duration
-                        trace_events[item["name"]].dur += item["dur"]
-                    else:
+            with open(file, "r") as f:
+                data = json.load(f)
+                for item in data["traceEvents"]:
+                    same_category = (item["cat"] == cat) if "cat" in item else False
+                    if (cat and same_category) or (not cat):  # category specific search
+                        if item["name"] in trace_events and "dur" in item:  # collapse uniques duration
+                            trace_events[item["name"]].dur += item["dur"]
+                        else:
+                            event = Event()
+                            event.ph = item["ph"] if "ph" in item else "N/A"
+                            event.tid = item["tid"] if "tid" in item else -1
+                            event.pid = item["pid"] if "pid" in item else -1
+                            event.name = item["name"] if "name" in item else "N/A"
+                            event.cat = item["cat"] if "cat" in item else "N/A"
+                            event.ts = item["ts"] if "ts" in item else -1
+                            event.id = item["id"] if "id" in item else -1
+                            event.dur = item["dur"] if "dur" in item else 0
+                            event.args_id = (
+                                item["args"]["id"]
+                                if ("args" in item) and ("id" in "args")
+                                else -1
+                            )
+                            trace_events[item["name"]] = event
+
+            self.events = list(trace_events.values())    
+        else:
+            trace_events: list[Event] = []
+
+            with open(file, "r") as f:
+                data = json.load(f)
+                for item in data["traceEvents"]:
+                    same_category = (item["cat"] == cat) if "cat" in item else False
+                    if (cat and same_category) or (not cat):  # category specific search
                         event = Event()
                         event.ph = item["ph"] if "ph" in item else "N/A"
                         event.tid = item["tid"] if "tid" in item else -1
@@ -75,9 +99,9 @@ class Case:
                             if ("args" in item) and ("id" in "args")
                             else -1
                         )
-                        trace_events[item["name"]] = event
+                        trace_events.append(event)
 
-        self.events = list(trace_events.values())
+            self.events = trace_events
 
     def __eq__(self, other):
         return self.filename == other.filename

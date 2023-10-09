@@ -124,10 +124,13 @@ def main_cli() -> str | None:
         args.o = ""
         args.ot = "console"
 
+    if args.nu:
+        print("!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!")
+
     # extract cases from json files
     cases = []
-    for file in args.files:
-        cases.append(Case(file, not args.nu, args.category))
+    for input_filename in args.files:
+        cases.append(Case(file=input_filename, unqiues=(not args.nu), cat=args.category))
 
     # match analyzer and save its report
     match args.ot:
