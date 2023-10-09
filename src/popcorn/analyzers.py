@@ -26,8 +26,8 @@ def _kdiff(a: Case, b: Case) -> list[tuple[Event, int]]:
 
 # compares kernels by their duration between cases provided
 def kernel_differences(cases: list[Case]) -> dict[str, list[tuple[Event, int]]]:
-    kdiffs: dict[str, list[tuple[Event, int]]] = {}
+    kdiff: dict[str, list[tuple[Event, int]]] = {}
     combos = combinations(cases, 2)
     for c in combos:
-        kdiffs[f"{c[0].title}_{c[1].title}"] = _kdiff(c[0], c[1])
-    return kdiffs
+        kdiff[f"{c[0].title}_{c[1].title}"] = _kdiff(c[0], c[1])
+    return kdiff
