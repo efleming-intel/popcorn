@@ -7,15 +7,16 @@ Args:
 """
 
 import argparse
+import importlib.metadata
 from openpyxl import Workbook
 import sys
 
-from popcorn import __version__
 from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
 from popcorn.structures import Case
 
+__version__ = importlib.metadata.version('popcorn')
 
 def main_cli() -> str | None:
     # prepare console interface arguments

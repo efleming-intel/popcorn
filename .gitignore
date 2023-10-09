@@ -1,5 +1,7 @@
 build
+dist
 __pycache__
 popcorn.egg-info
 .venv
 .vscode
+.pytest_cache
