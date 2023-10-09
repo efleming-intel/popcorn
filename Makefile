@@ -1,4 +1,4 @@
-setup:
+install:
 	pip install .
 
 clean:
