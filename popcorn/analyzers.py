@@ -7,9 +7,9 @@ def _hs(cs: Case) -> list[Event]:
     return sorted(cs.events, key=lambda i: i.dur, reverse=True)
 
 
-def hotspots(cs: list[Case]) -> dict[str, list[Event]]:
+def hotspots(cases: list[Case]) -> dict[str, list[Event]]:
     hs: dict[str, list[Event]] = {}
-    for case in cs:
+    for case in cases:
         hs[case.title] = _hs(case)
     return hs
 

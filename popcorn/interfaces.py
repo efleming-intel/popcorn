@@ -31,7 +31,7 @@ def _tablify_row(row: list[str]):
 # default console interface
 class Kettle:
     def __init__(self, verbosity=Verbosity.STANDARD) -> None:
-        self.verbosity=verbosity
+        self.verbosity = verbosity
 
     def print_table(self, title: str, fields: list[str], data: list[list[str]]):
         table = PrettyTable(title=title, field_names=fields)
@@ -56,9 +56,9 @@ class Kettle:
                 else:
                     interesting_data = data[:25] + data[-25:]
                     table.add_rows(interesting_data)
-        
+
         print(table)
-    
+
     def save(self, _):
         pass
 
@@ -107,8 +107,8 @@ class MDTables:
                 # generate table of contents
                 out.write("# " + filename + "\n\nContents:\n\n")
                 for table in self._tables:
-                    out.write('* [' + table.title + ']( #' + table.title + ' )\n')
-                out.write('\n')
+                    out.write("* [" + table.title + "]( #" + table.title + " )\n")
+                out.write("\n")
                 # write data
                 for table in self._tables:
                     with open(table.filename, "r") as temp:
@@ -116,7 +116,7 @@ class MDTables:
                         out.writelines(temp.readlines())
                         out.write("\n\n")
                     os.remove(table.filename)  # delete temp file
-                    out.write('\n')
+                    out.write("\n")
 
 
 # csv interfaces

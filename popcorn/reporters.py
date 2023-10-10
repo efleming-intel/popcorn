@@ -63,7 +63,9 @@ def report_kdiff(
             wb.print_table(
                 title=_kernel_differences_sheet_name(item[0]),
                 fields=kdiff_header,
-                data=[([diff] + event.row(trunc_name=True)) for (event, diff) in item[1]],
+                data=[
+                    ([diff] + event.row(trunc_name=True)) for (event, diff) in item[1]
+                ],
             )
             print("\n")
     else:

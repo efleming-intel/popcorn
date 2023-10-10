@@ -1,9 +1,11 @@
+from abc import abstractmethod
 from dataclasses import dataclass
-import json
 import os
 
+
 def _add_quotes(s: str) -> str:
-    return ('\"'+s+'\"')
+    return '"' + s + '"'
+
 
 @dataclass
 class Event:
@@ -17,21 +19,10 @@ class Event:
     dur: int
     args_id: int
 
-    def __init__(self):
-        self.ph = "N/A"
-        self.tid = -1
-        self.pid = -1
-        self.name = "N/A"
-        self.cat = "N/A"
-        self.ts = -1
-        self.id = -1
-        self.dur = 0
-        self.args_id = -1
-
     def __eq__(self, other):
         return self.name == other.name
 
-    def row(self, trunc_name = False) -> list[str]:
+    def row(self, trunc_name=False) -> list[str]:
         return [
             self.ph,
             self.tid,
@@ -45,67 +36,36 @@ class Event:
         ]
 
 
+class Reader:
+    def __init__(self, format: str | None = None):
+        self._file_format = format
+
+    @property
+    def format(self) -> str:
+        return self._file_format
+
+    @abstractmethod
+    def create_event_from_trace_item(self, item) -> Event:
+        ...
+
+    @abstractmethod
+    def read(self, filename: str, uniques: bool, cat: str | None) -> list[Event]:
+        ...
+
+
 class Case:
-    def __init__(self, file, uniques=True, cat=None):
-        self.filename : str = os.path.basename(file)
-
-        if uniques:
-            trace_events: dict[str, Event] = {}
-
-            with open(file, "r") as f:
-                data = json.load(f)
-                for item in data["traceEvents"]:
-                    same_category = (item["cat"] == cat) if "cat" in item else False
-                    if (cat and same_category) or (not cat):  # category specific search
-                        if item["name"] in trace_events and "dur" in item:  # collapse uniques duration
-                            trace_events[item["name"]].dur += item["dur"]
-                        else:
-                            event = Event()
-                            event.ph = item["ph"] if "ph" in item else "N/A"
-                            event.tid = item["tid"] if "tid" in item else -1
-                            event.pid = item["pid"] if "pid" in item else -1
-                            event.name = item["name"] if "name" in item else "N/A"
-                            event.cat = item["cat"] if "cat" in item else "N/A"
-                            event.ts = item["ts"] if "ts" in item else -1
-                            event.id = item["id"] if "id" in item else -1
-                            event.dur = item["dur"] if "dur" in item else 0
-                            event.args_id = (
-                                item["args"]["id"]
-                                if ("args" in item) and ("id" in "args")
-                                else -1
-                            )
-                            trace_events[item["name"]] = event
-
-            self.events = list(trace_events.values())    
-        else:
-            trace_events: list[Event] = []
-
-            with open(file, "r") as f:
-                data = json.load(f)
-                for item in data["traceEvents"]:
-                    same_category = (item["cat"] == cat) if "cat" in item else False
-                    if (cat and same_category) or (not cat):  # category specific search
-                        event = Event()
-                        event.ph = item["ph"] if "ph" in item else "N/A"
-                        event.tid = item["tid"] if "tid" in item else -1
-                        event.pid = item["pid"] if "pid" in item else -1
-                        event.name = item["name"] if "name" in item else "N/A"
-                        event.cat = item["cat"] if "cat" in item else "N/A"
-                        event.ts = item["ts"] if "ts" in item else -1
-                        event.id = item["id"] if "id" in item else -1
-                        event.dur = item["dur"] if "dur" in item else 0
-                        event.args_id = (
-                            item["args"]["id"]
-                            if ("args" in item) and ("id" in "args")
-                            else -1
-                        )
-                        trace_events.append(event)
-
-            self.events = trace_events
+    def __init__(self, file, reader: Reader, uniques=True, cat=None):
+        self.filename: str = os.path.basename(file)
+        self.reader = reader
+        self.events: list[Event] = self.reader.read(file, uniques, cat)
 
     def __eq__(self, other):
         return self.filename == other.filename
-    
+
     @property
     def title(self) -> str:
-        return self.filename.removesuffix('.json')
+        return (
+            self.filename.removesuffix(("." + self.reader.format))
+            if self.reader.format
+            else self.filename
+        )

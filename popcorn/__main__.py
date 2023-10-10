@@ -3,7 +3,7 @@
 Popcorn, a kernel analyzer tool.
 
 Args:
-    files: A list of json trace file names.
+    files: A list of trace file names.
 """
 
 import argparse
@@ -14,9 +14,11 @@ import sys
 from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
+from popcorn.readers import UnitraceJsonReader
 from popcorn.structures import Case
 
-__version__ = importlib.metadata.version('popcorn')
+__version__ = importlib.metadata.version("popcorn")
+
 
 def main_cli() -> str | None:
     # prepare console interface arguments
@@ -29,7 +31,7 @@ def main_cli() -> str | None:
         "files",
         nargs="+",
         type=str,
-        help="input json trace files (provide at least one)",
+        help="input trace files (provide at least one)",
     )
 
     parser.add_argument(
@@ -67,14 +69,14 @@ def main_cli() -> str | None:
         "--verbose",
         action="store_true",
         help="give a detailed report (console output only)",
-        dest="verbose"
+        dest="verbose",
     )
     verbosity_args.add_argument(
         "-q",
         "--quiet",
         action="store_true",
         help="give a minimal report (console output only)",
-        dest="quiet"
+        dest="quiet",
     )
 
     parser.add_argument(
@@ -126,12 +128,24 @@ def main_cli() -> str | None:
         args.ot = "console"
 
     if args.nu:
-        print("!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!")
+        print(
+            "!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!"
+        )
 
     # extract cases from json files
     cases = []
+    reader = (
+        UnitraceJsonReader()
+    )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
     for input_filename in args.files:
-        cases.append(Case(file=input_filename, unqiues=(not args.nu), cat=args.category))
+        cases.append(
+            Case(
+                file=input_filename,
+                reader=reader,
+                uniques=(not args.nu),
+                cat=args.category,
+            )
+        )
 
     # match analyzer and save its report
     match args.ot:
