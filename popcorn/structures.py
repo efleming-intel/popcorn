@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from dataclasses import dataclass
 import os
 
 
@@ -7,17 +6,28 @@ def _add_quotes(s: str) -> str:
     return '"' + s + '"'
 
 
-@dataclass
 class Event:
-    ph: str
-    tid: int
-    pid: int
-    name: str
-    cat: str
-    ts: int
-    id: int
-    dur: int
-    args_id: int
+    def __init__(
+        self,
+        ph="",
+        tid=-1,
+        pid=-1,
+        name="N/A",
+        cat="N/A",
+        ts=0,
+        id=-1,
+        dur=0,
+        args_id=-1,
+    ):
+        self.ph = ph
+        self.tid = tid
+        self.pid = pid
+        self.name = name
+        self.cat = cat
+        self.ts = ts
+        self.id = id
+        self.dur = dur
+        self.args_id = args_id
 
     def __eq__(self, other):
         return self.name == other.name
@@ -25,14 +35,14 @@ class Event:
     def row(self, trunc_name=False) -> list[str]:
         return [
             self.ph,
-            self.tid,
-            self.pid,
+            str(self.tid),
+            str(self.pid),
             _add_quotes(self.name if not trunc_name else self.name[0:25]),
             self.cat,
-            self.ts,
-            self.id,
-            self.dur,
-            self.args_id,
+            str(self.ts),
+            str(self.id),
+            str(self.dur),
+            str(self.args_id),
         ]
 
 
@@ -61,6 +71,13 @@ class Case:
 
     def __eq__(self, other):
         return self.filename == other.filename
+
+    def __getitem__(self, event_name: str) -> Event | None:
+        for e in self.events:
+            if e.name == event_name:
+                return e
+
+        return None
 
     @property
     def title(self) -> str:

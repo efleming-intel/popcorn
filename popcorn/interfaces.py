@@ -17,15 +17,16 @@ def _str2dash(s: str) -> str:
     return "".join(list(repeat("-", len(s))))
 
 
-def _generate_header_line(row: list[str]):
-    tags = []
-    for item in row:
-        tags.append(_str2dash(item))
-    return " | ".join(tags)
-
+def _generate_header_line(row: list[str]) -> str:
+    if len(row) > 0:
+        tags = []
+        for item in row:
+            tags.append(_str2dash(item))
+        return " | ".join(tags)
+    return None
 
 def _tablify_row(row: list[str]):
-    return "| " + (" | ".join(str(i) for i in row)) + " |\n"
+    return "| " + (" | ".join(row)) + " |\n"
 
 
 # default console interface
