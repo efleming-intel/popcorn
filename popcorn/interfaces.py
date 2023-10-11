@@ -110,15 +110,19 @@ class MDTables:
 class CSVSheet:
     def __init__(self, title: str):
         self.title = title
-        open(self.filename, "w").close()  # prep file
+        self.table = PrettyTable(title=title)
 
     @property
     def filename(self):
         return self.title + ".csv"
 
     def append(self, row: list[str]):
-        with open(self.filename, "a") as file:
-            file.write(",".join(row) + "\n")
+        self.table.add_row(row)
+
+    def save(self, folder_path: str):
+        file_path = folder_path + "/" + self.filename
+        with open(file_path, "w") as file:
+            file.write(self.table.get_csv_string(header=False))
 
 
 class CSVArchive:
@@ -132,11 +136,9 @@ class CSVArchive:
 
     def save(self, foldername: str):
         if len(self._sheets) > 0:
-            # make a folder then move the sheets into it
+            # make a folder then save the sheets into it
             folder_path = os.path.abspath(foldername)
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
             for sheet in self._sheets:
-                os.replace(
-                    os.path.abspath(sheet.filename), folder_path + "/" + sheet.filename
-                )
+                sheet.save(folder_path=folder_path)

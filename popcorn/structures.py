@@ -2,10 +2,6 @@ from abc import ABC, abstractmethod
 import os
 
 
-def _add_quotes(s: str) -> str:
-    return '"' + s + '"'
-
-
 class Event:
     def __init__(
         self,
@@ -37,7 +33,7 @@ class Event:
             self.ph,
             str(self.tid),
             str(self.pid),
-            _add_quotes(self.name if not trunc_name else self.name[0:25]),
+            self.name if not trunc_name else self.name[0:25],
             self.cat,
             str(self.ts),
             str(self.id),
