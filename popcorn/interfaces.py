@@ -12,12 +12,12 @@ class Verbosity(Enum):
     QUIET = 2
 
     @property
-    def item_limit(self):
+    def limit(self):
         match self:
             case Verbosity.STANDARD:
                 return 25
             case Verbosity.QUIET:
-                return 5
+                return 10
             case _: # no limit
                 return -1
 
@@ -46,23 +46,14 @@ class Kettle:
 
     def print_table(self, title: str, fields: list[str], data: list[list[str]]):
         table = PrettyTable(title=title, field_names=fields)
-        # table._max_table_width = os.get_terminal_size().columns
 
-        match self.verbosity:
-            case Verbosity.VERBOSE:
-                # add entire dataset
-                table.add_rows(data)
-            case _:
-                # add only the top and bottom 5
-                limit = self.verbosity.item_limit
-                if (limit <= 0) or (len(data) <= (2 * limit)):
-                    table.add_rows(data)
-                else:
-                    interesting_data = data[:limit] + data[-limit:]
-                    table.add_rows(interesting_data)
+        limit = self.verbosity.limit
+        if (limit > 0) and (len(data) > (2 * limit)):
+            table.add_rows(data[:limit] + data[-limit:])
+        else:   # either verbose chosen or data is small
+            table.add_rows(data)
 
         print(table)
-        return table # for testing purposes
 
     def save(self, _):
         pass

@@ -8,7 +8,7 @@ from popcorn.readers import Reader
 from popcorn.structures import Case, Event
 
 
-class FileTestReader(Reader):
+class MockReader(Reader):
     def create_event_from_trace_item(self, _) -> Event:
         return None
     def read(self, _: str, __: bool, ___: str | None) -> list[Event]:
@@ -18,7 +18,7 @@ class FileTestReader(Reader):
 def _prep_mock_case(
     name: str, events: list[Event], uniques: bool = True, category: str | None = None
 ) -> Case:
-    reader = FileTestReader()
+    reader = MockReader()
     reader.create_event_from_trace_item = None
     reader.read = MagicMock(return_value=events)
     return Case(file=name, reader=reader, uniques=uniques, cat=category)

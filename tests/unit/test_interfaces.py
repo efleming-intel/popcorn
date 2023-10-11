@@ -9,6 +9,7 @@ from popcorn.interfaces import (
 )
 
 
+# test helper functions
 @given(s=st.text())
 def test_str2dash(s: str):
     dash = _str2dash(s)
@@ -38,6 +39,8 @@ def test_row_tablifier(row: list[str]):
     assert (" | ".join(row)) in table_row
 
 
+# test kettle
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(
     verbosity=st.from_type(Verbosity),
     fields=st.lists(
@@ -56,25 +59,24 @@ def test_row_tablifier(row: list[str]):
         min_size=1
     ),
 )
-def test_kettle(verbosity: Verbosity, fields: list[str], data: list[list[str]]):
+def test_kettle(capfd, verbosity: Verbosity, fields: list[str], data: list[list[str]]):
     title = "!!! - TITLE - !!!"
-    kettle = Kettle(verbosity)
-    table = kettle.print_table(title, fields, data)
+    Kettle(verbosity).print_table(title, fields, data)
+    table, err = capfd.readouterr()
 
-    assert table.title == title
+    assert table and (not err)
+
+    assert title in table
     for f in fields:
-        assert f in table.field_names
+        assert f in table
     
     data_which_should_be_displayed: list[list[str]] = []
-    match verbosity:
-        case Verbosity.VERBOSE:
-            data_which_should_be_displayed = data
-        case _:
-            limit = verbosity.item_limit
-            if (limit <= 0) or (len(data) <= (2 * limit)):
-                data_which_should_be_displayed = data
-            else:
-                data_which_should_be_displayed.extend(data[:limit] + data[-limit:])
+    limit = verbosity.limit
+    if (limit > 0) and (len(data) > (2 * limit)):
+        data_which_should_be_displayed.extend(data[:limit] + data[-limit:])
+    else:
+        data_which_should_be_displayed = data
     
-    for d in data_which_should_be_displayed:
-        assert d in table.rows
+    for row in data_which_should_be_displayed:
+        for s in row:
+            assert s in table
