@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 import os
 
 
@@ -46,7 +46,7 @@ class Event:
         ]
 
 
-class Reader:
+class Reader(ABC):
     def __init__(self, format: str | None = None):
         self._file_format = format
 

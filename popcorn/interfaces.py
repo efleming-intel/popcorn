@@ -11,6 +11,16 @@ class Verbosity(Enum):
     VERBOSE = 1
     QUIET = 2
 
+    @property
+    def item_limit(self):
+        match self:
+            case Verbosity.STANDARD:
+                return 25
+            case Verbosity.QUIET:
+                return 5
+            case _: # no limit
+                return -1
+
 
 def _str2dash(s: str) -> str:
     # returns a string of dashes the same length as s
@@ -36,29 +46,23 @@ class Kettle:
 
     def print_table(self, title: str, fields: list[str], data: list[list[str]]):
         table = PrettyTable(title=title, field_names=fields)
-        table._max_table_width = os.get_terminal_size().columns
+        # table._max_table_width = os.get_terminal_size().columns
 
         match self.verbosity:
             case Verbosity.VERBOSE:
                 # add entire dataset
                 table.add_rows(data)
-            case Verbosity.QUIET:
+            case _:
                 # add only the top and bottom 5
-                if len(data) <= 10:
+                limit = self.verbosity.item_limit
+                if (limit <= 0) or (len(data) <= (2 * limit)):
                     table.add_rows(data)
                 else:
-                    interesting_data = data[:5] + data[-5:]
-                    table.add_rows(interesting_data)
-
-            case Verbosity.STANDARD:
-                # add only the top and bottom 25
-                if len(data) <= 50:
-                    table.add_rows(data)
-                else:
-                    interesting_data = data[:25] + data[-25:]
+                    interesting_data = data[:limit] + data[-limit:]
                     table.add_rows(interesting_data)
 
         print(table)
+        return table # for testing purposes
 
     def save(self, _):
         pass
@@ -132,7 +136,7 @@ class CSVSheet:
 
     def append(self, row: list[str]):
         with open(self.filename, "a") as file:
-            file.write(",".join(str(i) for i in row) + "\n")
+            file.write(",".join(row) + "\n")
 
 
 class CSVArchive:
