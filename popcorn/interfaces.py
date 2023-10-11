@@ -1,11 +1,10 @@
 from enum import Enum
-from itertools import repeat
 import os
 
-from prettytable import PrettyTable
+from prettytable import PrettyTable, MARKDOWN
 
 
-# useful classes and functions
+# default console interface
 class Verbosity(Enum):
     STANDARD = 0
     VERBOSE = 1
@@ -18,28 +17,10 @@ class Verbosity(Enum):
                 return 25
             case Verbosity.QUIET:
                 return 10
-            case _: # no limit
+            case _:  # no limit
                 return -1
 
 
-def _str2dash(s: str) -> str:
-    # returns a string of dashes the same length as s
-    return "".join(list(repeat("-", len(s))))
-
-
-def _generate_header_line(row: list[str]) -> str:
-    if len(row) > 0:
-        tags = []
-        for item in row:
-            tags.append(_str2dash(item))
-        return " | ".join(tags)
-    return None
-
-def _tablify_row(row: list[str]):
-    return "| " + (" | ".join(row)) + " |\n"
-
-
-# default console interface
 class Kettle:
     def __init__(self, verbosity=Verbosity.STANDARD) -> None:
         self.verbosity = verbosity
@@ -50,7 +31,7 @@ class Kettle:
         limit = self.verbosity.limit
         if (limit > 0) and (len(data) > (2 * limit)):
             table.add_rows(data[:limit] + data[-limit:])
-        else:   # either verbose chosen or data is small
+        else:  # either verbose chosen or data is small
             table.add_rows(data)
 
         print(table)
@@ -59,23 +40,28 @@ class Kettle:
         pass
 
 
+# TODO: add html output interface?
 # markdown interface
 class MDTable:
     def __init__(self, title: str):
         self.title = title
         self.headerWritten = False
-        open(self.filename, "w").close()  # prep temp file
+        self._table = PrettyTable(title=title)
+        self._table.set_style(MARKDOWN)
 
     @property
     def filename(self):
         return self.title + ".md"
 
     def append(self, row: list[str]):
-        with open(self.filename, "a") as file:
-            file.write(_tablify_row(row))
-            if not self.headerWritten:
-                file.write("| " + _generate_header_line(row) + " |\n")
-                self.headerWritten = True
+        if not self.headerWritten:
+            self._table.field_names = row
+            self.headerWritten = True
+        else:
+            self._table.add_row(row)
+    
+    def get_markdown_string(self):
+        return self._table.get_string()
 
 
 class MDTables:
@@ -98,31 +84,27 @@ class MDTables:
                 out.write("\n")
                 # write data
                 for table in self._tables:
-                    with open(table.filename, "r") as temp:
-                        out.write("## " + table.title + "\n")
-                        out.writelines(temp.readlines())
-                        out.write("\n\n")
-                    os.remove(table.filename)  # delete temp file
-                    out.write("\n")
+                    out.write(table.get_markdown_string() + "\n\n")
+                out.write("\n")
 
 
 # csv interfaces
 class CSVSheet:
     def __init__(self, title: str):
         self.title = title
-        self.table = PrettyTable(title=title)
+        self._table = PrettyTable(title=title)
 
     @property
     def filename(self):
         return self.title + ".csv"
 
     def append(self, row: list[str]):
-        self.table.add_row(row)
+        self._table.add_row(row)
 
     def save(self, folder_path: str):
         file_path = folder_path + "/" + self.filename
         with open(file_path, "w") as file:
-            file.write(self.table.get_csv_string(header=False))
+            file.write(self._table.get_csv_string(header=False))
 
 
 class CSVArchive:
