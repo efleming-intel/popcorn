@@ -1,9 +1,6 @@
 from hypothesis import HealthCheck, given, settings, strategies as st
 
-from popcorn.interfaces import (
-    Verbosity,
-    Kettle,
-)
+from popcorn.interfaces import Verbosity, Kettle
 
 
 # test kettle
