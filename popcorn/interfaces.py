@@ -81,19 +81,10 @@ class MDTable:
 class MDTables:
     def __init__(self):
         self._tables: list[MDTable] = []
-        self._active_table_index = -1
-
-    @property
-    def active(self):
-        try:
-            return self._tables[self._active_table_index]
-        except IndexError:
-            pass
 
     def create_sheet(self, title: str) -> MDTable:
         sheet = MDTable(title)
         self._tables.append(sheet)
-        self._active_table_index += 1
         return sheet
 
     def save(self, filename: str):
@@ -132,20 +123,11 @@ class CSVSheet:
 
 class CSVArchive:
     def __init__(self):
-        self._sheets = []
-        self._active_sheet_index = -1
-
-    @property
-    def active(self):
-        try:
-            return self._sheets[self._active_sheet_index]
-        except IndexError:
-            pass
+        self._sheets: list[CSVSheet] = []
 
     def create_sheet(self, title: str) -> CSVSheet:
         sheet = CSVSheet(title)
         self._sheets.append(sheet)
-        self._active_sheet_index += 1
         return sheet
 
     def save(self, foldername: str):

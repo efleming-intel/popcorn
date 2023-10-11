@@ -27,7 +27,8 @@ def report_hotspots(
             print("\n")
     else:
         count = len(items)
-        if wb.active and wb.active.title == "Sheet":  # current sheet is unused
+        if isinstance(wb, Workbook) and wb.active.title == "Sheet":
+            # excel workaround
             ws = wb.active
             ws.title = _hotspots_sheet_name(items[0][0])
         else:
@@ -64,13 +65,13 @@ def report_kdiff(
                 title=_kernel_differences_sheet_name(item[0]),
                 fields=kdiff_header,
                 data=[
-                    ([diff] + event.row(trunc_name=True)) for (event, diff) in item[1]
+                    ([str(diff)] + event.row(trunc_name=True)) for (event, diff) in item[1]
                 ],
             )
             print("\n")
     else:
         count = len(items)
-        if wb.active.title == "Sheet":  # current sheet is unused
+        if isinstance(wb, Workbook) and wb.active.title == "Sheet":  # current sheet is unused
             ws = wb.active
             ws.title = _kernel_differences_sheet_name(items[0][0])
         else:
@@ -79,6 +80,6 @@ def report_kdiff(
         for i in range(0, count):
             ws.append(kdiff_header)  # header
             for event, diff in items[i][1]:
-                ws.append(([diff] + event.row()))
+                ws.append(([str(diff)] + event.row()))
             if i < count - 1:
                 ws = wb.create_sheet(_kernel_differences_sheet_name(items[i + 1][0]))

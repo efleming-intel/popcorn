@@ -3,20 +3,24 @@ from json import load as load_json
 from popcorn.structures import Event, Reader
 
 
+def _getv(item: dict, prop: str, default: str | int | bool = -1) -> str | int | bool:
+    return item[prop] if (prop in item.keys()) else default
+
+
 class UnitraceJsonReader(Reader):
     def __init__(self):
         super().__init__(format="json")
 
     def create_event_from_trace_item(self, item) -> Event:
         event = Event()
-        event.ph = item["ph"] if ("ph" in item.keys()) else "N/A"
-        event.tid = item["tid"] if ("tid" in item.keys()) else -1
-        event.pid = item["pid"] if ("pid" in item.keys()) else -1
-        event.name = item["name"] if ("name" in item.keys()) else "N/A"
-        event.cat = item["cat"] if ("cat" in item.keys()) else "N/A"
-        event.ts = item["ts"] if ("ts" in item.keys()) else -1
-        event.id = item["id"] if ("id" in item.keys()) else -1
-        event.dur = item["dur"] if ("dur" in item.keys()) else 0
+        event.ph = _getv(item, "ph", default="N/A")
+        event.tid = _getv(item, "tid")
+        event.pid = _getv(item, "pid")
+        event.name = _getv(item, "name", default="N/A")
+        event.cat = _getv(item, "cat", default="N/A")
+        event.ts = _getv(item, "ts")
+        event.id = _getv(item, "id")
+        event.dur = _getv(item, "dur", default=0)
         event.args_id = (
             item["args"]["id"]
             if (("args" in item.keys()) and ("id" in item["args"].keys()))
@@ -31,11 +35,15 @@ class UnitraceJsonReader(Reader):
             with open(filename, "r") as f:
                 data = load_json(f)
                 for item in data["traceEvents"]:
-                    same_category = (item["cat"] == cat) if ("cat" in item.keys()) else False
-                    if (cat and same_category) or (not cat):  # category specific search
+                    item_category = _getv(item, "cat", default=False)
+                    same_category = item_category and (item_category == cat)
+                    if (
+                        not cat
+                    ) or same_category:  # no filter applied or category matches
                         if item["name"] in unique_events:  # collapse uniques duration
-                            if ("dur" in item.keys()):
-                                unique_events[item["name"]].dur += item["dur"]
+                            unique_events[item["name"]].dur += _getv(
+                                item, "dur", default=0
+                            )
                         else:
                             unique_events[
                                 item["name"]
@@ -48,8 +56,11 @@ class UnitraceJsonReader(Reader):
             with open(filename, "r") as f:
                 data = load_json(f)
                 for item in data["traceEvents"]:
-                    same_category = (item["cat"] == cat) if ("cat" in item.keys()) else False
-                    if (cat and same_category) or (not cat):  # category specific search
+                    item_category = _getv(item, "cat", default=False)
+                    same_category = item_category and (item_category == cat)
+                    if (
+                        not cat
+                    ) or same_category:  # no filter applied or category matches
                         trace_events.append(self.create_event_from_trace_item(item))
 
             return trace_events
