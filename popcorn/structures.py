@@ -28,18 +28,22 @@ class Event:
     def __eq__(self, other):
         return self.name == other.name
 
-    def row(self, trunc_name=False) -> list[str]:
+    def row(self) -> list[str]:
         return [
             self.ph,
             str(self.tid),
             str(self.pid),
-            self.name if not trunc_name else self.name[0:25],
+            self.name,
             self.cat,
             str(self.ts),
             str(self.id),
             str(self.dur),
             str(self.args_id),
         ]
+    
+    @staticmethod
+    def header() -> list[str]:
+        return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
 
 
 class Reader(ABC):
