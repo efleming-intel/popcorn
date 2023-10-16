@@ -1,4 +1,3 @@
-from random import randint
 from hypothesis import given, strategies as st
 import math
 from unittest.mock import MagicMock
@@ -6,6 +5,7 @@ from unittest.mock import MagicMock
 from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.readers import Reader
 from popcorn.structures import Case, Event
+from tests.unit.common_utils import generate_event_durs
 
 
 class MockReader(Reader):
@@ -22,6 +22,14 @@ def _prep_mock_case(
     reader.create_event_from_trace_item = None
     reader.read = MagicMock(return_value=events)
     return Case(file=name, reader=reader, uniques=uniques, cat=category)
+
+
+def generate_cases_with_like_events(case_names: list[str], event_names: list[str]):
+    cases: list[Case] = []
+    for case_name in case_names:
+        events = generate_event_durs(event_names)
+        cases.append(_prep_mock_case(case_name, events))
+    return cases
 
 
 @given(
@@ -50,13 +58,7 @@ def test_kernel_differences(
 ):
     event_names: list[str] = list(event_names)
     case_names: list[str] = list(case_names)
-
-    cases: list[Case] = []
-    for case_name in case_names:
-        events: list[Event] = []
-        for event_name in event_names:
-            events.append(Event(name=event_name, dur=randint(0, 100000)))
-        cases.append(_prep_mock_case(case_name, events))
+    cases = generate_cases_with_like_events(case_names, event_names)
 
     analysis = list(kernel_differences(cases).items())
 
