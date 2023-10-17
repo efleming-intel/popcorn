@@ -61,7 +61,7 @@ class MDTable:
             self._table.add_row(row)
     
     def get_markdown_string(self):
-        return self._table.get_string()
+        return "## " + self.title + "\n\n" + self._table.get_string() + "\n"
 
 
 class MDTables:
