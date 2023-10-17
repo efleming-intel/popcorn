@@ -28,25 +28,26 @@ class LevelZeroTracerJsonReader(Reader):
         )
         return event
 
-    def read(self, filename: str, uniques: bool, cat: str | None) -> list[Event]:
+    def read(self, filename: str, uniques: bool = True, cat: str | None = None) -> list[Event]:
         if uniques:
             unique_events: dict[str, Event] = {}
 
             with open(filename, "r") as f:
                 data = load_json(f)
                 for item in data["traceEvents"]:
+                    item_name = _getv(item, "name", default="N/A")
                     item_category = _getv(item, "cat", default=False)
                     same_category = item_category and (item_category == cat)
                     if (
                         not cat
                     ) or same_category:  # no filter applied or category matches
-                        if item["name"] in unique_events:  # collapse uniques duration
-                            unique_events[item["name"]].dur += _getv(
+                        if item_name in unique_events:  # collapse uniques duration
+                            unique_events[item_name].dur += _getv(
                                 item, "dur", default=0
                             )
                         else:
                             unique_events[
-                                item["name"]
+                                item_name
                             ] = self.create_event_from_trace_item(item)
 
             return list(unique_events.values())
