@@ -1,34 +1,17 @@
 from hypothesis import given, strategies as st
-import math
-from unittest.mock import MagicMock
+from math import comb as possible_combinations
 
 from popcorn.analyzers import hotspots, kernel_differences
-from popcorn.readers import Reader
 from popcorn.structures import Case, Event
-from tests.unit.common_utils import generate_event_durs
-
-
-class MockReader(Reader):
-    def create_event_from_trace_item(self, _) -> Event:
-        return None
-    def read(self, _: str, __: bool, ___: str | None) -> list[Event]:
-        return None # to be mocked
-    
-
-def _prep_mock_case(
-    name: str, events: list[Event], uniques: bool = True, category: str | None = None
-) -> Case:
-    reader = MockReader()
-    reader.create_event_from_trace_item = None
-    reader.read = MagicMock(return_value=events)
-    return Case(file=name, reader=reader, uniques=uniques, cat=category)
+from tests.unit.common_utils import generate_event_durs, prep_mock_case
 
 
 def generate_cases_with_like_events(case_names: list[str], event_names: list[str]):
     cases: list[Case] = []
     for case_name in case_names:
-        events = generate_event_durs(event_names)
-        cases.append(_prep_mock_case(case_name, events))
+        cases.append(prep_mock_case(
+            case_name, generate_event_durs(event_names)
+        ))
     return cases
 
 
@@ -39,7 +22,7 @@ def generate_cases_with_like_events(case_names: list[str], event_names: list[str
 )
 def test_hotspots(cases_dict: dict[str, list[int]]):
     cases = [
-        _prep_mock_case(name=item[0], events=(Event(dur=d) for d in item[1])) for item in cases_dict.items()
+        prep_mock_case(name=item[0], events=(Event(dur=d) for d in item[1])) for item in cases_dict.items()
     ]
     analysis = list(hotspots(cases).items())
 
@@ -62,7 +45,7 @@ def test_kernel_differences(
 
     analysis = list(kernel_differences(cases).items())
 
-    assert len(analysis) == math.comb(len(cases), 2)
+    assert len(analysis) == possible_combinations(len(cases), 2)
     for diff_name, events in analysis:
         term_match = diff_name.split('_')
         case_pair: list[Case] = []

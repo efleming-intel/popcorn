@@ -26,7 +26,9 @@ class Event:
         self.args_id = args_id
 
     def __eq__(self, other):
-        return self.name == other.name
+        if isinstance(other, Event):
+            return self.name == other.name
+        return False
 
     def row(self) -> list[str]:
         return [
@@ -70,7 +72,9 @@ class Case:
         self.events: list[Event] = self.reader.read(file, uniques, cat)
 
     def __eq__(self, other):
-        return self.filename == other.filename
+        if isinstance(other, Case):
+            return self.filename == other.filename
+        return False
 
     def __getitem__(self, event_name: str) -> Event | None:
         for e in self.events:
