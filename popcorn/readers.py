@@ -7,7 +7,7 @@ def _getv(item: dict, prop: str, default: str | int | bool = -1) -> str | int | 
     return item[prop] if (prop in item.keys()) else default
 
 
-class UnitraceJsonReader(Reader):
+class LevelZeroTracerJsonReader(Reader):
     def __init__(self):
         super().__init__(format="json")
 

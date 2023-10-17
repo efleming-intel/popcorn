@@ -14,7 +14,7 @@ import sys
 from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
-from popcorn.readers import UnitraceJsonReader
+from popcorn.readers import LevelZeroTracerJsonReader
 from popcorn.structures import Case
 
 __version__ = importlib.metadata.version("popcorn")
@@ -135,7 +135,7 @@ def main_cli() -> str | None:
     # extract cases from json files
     cases = []
     reader = (
-        UnitraceJsonReader()
+        LevelZeroTracerJsonReader()
     )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
     for input_filename in args.files:
         cases.append(
