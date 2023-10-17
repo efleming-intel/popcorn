@@ -19,7 +19,10 @@ def test_initialized_event_defaults():
 def test_event_equivalence():
     event = Event(name="test", dur=1234)
     other = Event(name="test", dur=654)
-    assert event == other
+    another = Event(name="other")
+
+    assert event == other and event != event.row()
+    assert event != another
 
 
 def test_event_row():
@@ -73,8 +76,13 @@ def test_case_equivalence():
         "filename.json",
         [Event(name="test3", dur=27), Event(name="test4", dur=89)]
     )
+    case4 = prep_mock_case(
+        "other.json",
+        [Event(name="test3", dur=27), Event(name="test4", dur=89)]
+    )
 
     assert (case1 == case2) and (case2 == case3)
+    assert case3 != case4
 
 
 def test_case_string_indexing():
