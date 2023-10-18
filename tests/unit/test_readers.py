@@ -23,7 +23,7 @@ def test_getv(item: dict, prop: str, default: int):
 
 
 # test LevelZeroTracerJsonReader
-def test_event_creation():
+def test_event_creation_from_zetrace_json():
     item: dict = {
         "ph": "X",
         "tid": 989081238,
@@ -51,7 +51,7 @@ def test_event_creation():
     assert event.args_id == item["args"]["id"] and null_event.args_id == -1
 
 
-def test_event_retrieval_from_json(tmp_path):
+def test_event_retrieval_from_zetrace_json(tmp_path):
     input_json = '''
 {
     "traceEvents": [
