@@ -1,7 +1,7 @@
 import os
 from hypothesis import HealthCheck, given, settings, strategies as st
 
-from popcorn.interfaces import MDTable, Verbosity, Kettle, _generate_markdown_header_line, _generate_markdown_row, _str2dash
+from popcorn.interfaces import MDTable, MDTables, Verbosity, Kettle, _generate_markdown_header_line, _generate_markdown_row, _str2dash
 
 
 # test kettle
@@ -100,3 +100,43 @@ def test_mdtable(tmp_path):
         assert "| Lucy | 10/18/2023 | 96 |\n" == lines[2]
     
     os.remove(table.filename)
+
+
+def test_mdtables(tmp_path):
+    mdtables = MDTables()
+    test1_title = str(tmp_path) + "/first_test"
+    test2_title = str(tmp_path) + "/second_test"
+
+    sheet1 = mdtables.create_sheet(test1_title)
+    sheet2 = mdtables.create_sheet(test2_title)
+
+    test1_path = os.path.abspath(test1_title + ".md")
+    test2_path = os.path.abspath(test1_title + ".md")
+    assert os.path.exists(test1_path) and os.path.exists(test2_path)
+
+    sheet1.append(["name", "date", "grade"])
+    sheet1.append(["Lucy", "10/18/2023", 96])
+    sheet2.append(["name", "salary", "class size"])
+    sheet2.append(["Mary", "$10,000", 67])
+
+    output_file = str(tmp_path) + "/result.md"
+    mdtables.save(output_file)
+    assert not(os.path.exists(test1_path) or os.path.exists(test2_path))
+    assert os.path.exists(output_file)
+
+    with open(output_file, "r") as file:
+        lines = file.readlines()
+        assert len(lines) == 21
+        text = "".join(lines)
+        assert output_file in text
+        assert test1_title in text
+        assert "| name | date | grade |\n" in text
+        assert "| ---- | ---- | ----- |\n" in text
+        assert "| Lucy | 10/18/2023 | 96 |\n" in text
+
+        assert test2_title in text
+        assert "| name | salary | class size |\n" in text
+        assert "| ---- | ------ | ---------- |\n" in text
+        assert "| Mary | $10,000 | 67 |\n" in text
+
+    os.remove(output_file)

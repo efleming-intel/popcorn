@@ -80,19 +80,10 @@ class MDTable:
 class MDTables:
     def __init__(self):
         self._tables: list[MDTable] = []
-        self._active_table_index = -1
-
-    @property
-    def active(self):
-        try:
-            return self._tables[self._active_table_index]
-        except IndexError:
-            pass
 
     def create_sheet(self, title: str) -> MDTable:
         sheet = MDTable(title)
         self._tables.append(sheet)
-        self._active_table_index += 1
         return sheet
 
     def save(self, filename: str):
