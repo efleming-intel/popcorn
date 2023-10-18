@@ -1,7 +1,8 @@
 import os
+import shutil
 from hypothesis import HealthCheck, given, settings, strategies as st
 
-from popcorn.interfaces import MDTable, MDTables, Verbosity, Kettle, _generate_markdown_header_line, _generate_markdown_row, _str2dash
+from popcorn.interfaces import CSVArchive, CSVSheet, MDTable, MDTables, Verbosity, Kettle, _generate_markdown_header_line, _generate_markdown_row, _str2dash
 
 
 # test kettle
@@ -47,7 +48,7 @@ def test_kettle(capfd, verbosity: Verbosity, fields: list[str], data: list[list[
             assert s in table
 
 
-# test markdown output
+# test markdown
 @given(s=st.text())
 def test_str2dash(s: str):
     dash = _str2dash(s)
@@ -140,3 +141,47 @@ def test_mdtables(tmp_path):
         assert "| Mary | $10,000 | 67 |\n" in text
 
     os.remove(output_file)
+
+
+# test csv
+def test_csvsheet(tmp_path):
+    table = CSVSheet("test")
+    assert table.filename == "test.csv"
+
+    table.append(["name", "date", "grade"])
+    table.append(["Lucy", "10/18/2023", 96])
+    table.save(str(tmp_path))
+
+    test_path = os.path.abspath(str(tmp_path) + "/" + table.filename)
+    with open(test_path, "r") as file:
+        lines = file.readlines()
+        assert len(lines) == 2
+        assert "name,date,grade\n" == lines[0]
+        assert "Lucy,10/18/2023,96\n" == lines[1]
+    
+    os.remove(test_path)
+
+
+def test_csvarchive(tmp_path):
+    archive = CSVArchive()
+    test1_title = "first_test"
+    test2_title = "second_test"
+
+    sheet1 = archive.create_sheet(test1_title)
+    sheet1.append(["name", "date", "grade"])
+    sheet1.append(["Lucy", "10/18/2023", 96])
+
+    sheet2 = archive.create_sheet(test2_title)
+    sheet2.append(["name", "salary", "class size"])
+    sheet2.append(["Mary", "$10,000", 67])
+
+    output_folder = str(tmp_path) + "/result"
+    archive.save(output_folder)
+    
+    test1_path = os.path.abspath(output_folder + "/" + "first_test.csv")
+    test2_path = os.path.abspath(output_folder + "/" + "second_test.csv")
+    
+    assert os.path.exists(output_folder)
+    assert os.path.exists(test1_path) and os.path.exists(test2_path)
+
+    shutil.rmtree(output_folder)
