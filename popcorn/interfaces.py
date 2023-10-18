@@ -1,4 +1,5 @@
 from enum import Enum
+from itertools import repeat
 import os
 
 from prettytable import PrettyTable, MARKDOWN
@@ -42,35 +43,56 @@ class Kettle:
 
 # TODO: add html output interface?
 # markdown interface
+def _str2dash(s: str) -> str:
+    # returns a string of dashes the same length as s
+    return "".join(list(repeat("-", len(s))))
+
+
+def _generate_markdown_header_line(row: list[str]) -> str:
+    tags = []
+    for item in row:
+        tags.append(_str2dash(item))
+    return " | ".join(tags)
+
+
+def _generate_markdown_row(row: list[str]) -> str:
+    return "| " + (" | ".join(str(i) for i in row)) + " |\n"
+
+
 class MDTable:
     def __init__(self, title: str):
         self.title = title
         self.headerWritten = False
-        self._table = PrettyTable(title=title)
-        self._table.set_style(MARKDOWN)
+        open(self.filename, "w").close()  # prep temp file
 
     @property
     def filename(self):
         return self.title + ".md"
 
     def append(self, row: list[str]):
-        if not self.headerWritten:
-            self._table.field_names = row
-            self.headerWritten = True
-        else:
-            self._table.add_row(row)
-    
-    def get_markdown_string(self):
-        return "## " + self.title + "\n\n" + self._table.get_string() + "\n"
+        with open(self.filename, "a") as file:
+            file.write(_generate_markdown_row(row))
+            if not self.headerWritten:
+                file.write("| " + _generate_markdown_header_line(row) + " |\n")
+                self.headerWritten = True
 
 
 class MDTables:
     def __init__(self):
         self._tables: list[MDTable] = []
+        self._active_table_index = -1
+
+    @property
+    def active(self):
+        try:
+            return self._tables[self._active_table_index]
+        except IndexError:
+            pass
 
     def create_sheet(self, title: str) -> MDTable:
         sheet = MDTable(title)
         self._tables.append(sheet)
+        self._active_table_index += 1
         return sheet
 
     def save(self, filename: str):
@@ -80,12 +102,16 @@ class MDTables:
                 # generate table of contents
                 out.write("# " + filename + "\n\nContents:\n\n")
                 for table in self._tables:
-                    out.write("* [" + table.title + "]( #" + table.title + " )\n")
-                out.write("\n")
+                    out.write('* [' + table.title + ']( #' + table.title + ' )\n')
+                out.write('\n')
                 # write data
                 for table in self._tables:
-                    out.write(table.get_markdown_string() + "\n\n")
-                out.write("\n")
+                    with open(table.filename, "r") as temp:
+                        out.write("## " + table.title + "\n")
+                        out.writelines(temp.readlines())
+                        out.write("\n\n")
+                    os.remove(table.filename)  # delete temp file
+                    out.write('\n')
 
 
 # csv interfaces
