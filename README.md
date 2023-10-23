@@ -1,6 +1,6 @@
-# popcorn
+# <img src="popcorn.svg" width=64/> popcorn
 
-popcorn is a cross-platform kernel trace log analyzer written in Python, intended to assist in triaging problems like performance regression.
+popcorn is a cross-platform kernel trace log analyzer written in Python, intended to assist in triaging problems like performance regression. This tool was built with [Intel's Level Zero Tracer](https://github.com/intel/pti-gpu/blob/master/tools/ze_tracer/README.md) in mind.
 
 ## Installation
 
