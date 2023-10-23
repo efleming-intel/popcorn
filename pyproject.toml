@@ -4,25 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "popcorn"
-authors = [
-    {name = "Ethan Fleming", email = "ethan.fleming@intel.com"},
-]
-description = "Cross-platform kernel trace analyzer"
-dynamic = ["version", "readme"]
+version = "0.0.1"
+authors = [{ name = "Ethan Fleming", email = "ethan.fleming@intel.com" }]
+description = "cross-platform kernel trace analyzer"
+dynamic = ["readme"]
 requires-python = ">=3.8"
 keywords = ["kernel", "analyzer", "hotspots", "trace", "log", "tool"]
-dependencies = [
-    "openpyxl"
-]
+dependencies = ["openpyxl", "prettytable"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Customer Service",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: System :: Operating System Kernels",
-    "Topic :: Utilities" 
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "hypothesis"
 ]
 
 [project.scripts]
@@ -33,5 +37,4 @@ Source = 'https://www.github.com/efleming-intel/popcorn'
 Tracker = 'https://www.github.com/efleming-intel/popcorn/issues'
 
 [tool.setuptools.dynamic]
-version = { attr = "popcorn.VERSION" }
 readme = { file = ["README.md"] }
