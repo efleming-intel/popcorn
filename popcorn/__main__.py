@@ -7,7 +7,6 @@ Args:
 """
 
 import argparse
-import importlib.metadata
 from openpyxl import Workbook
 import sys
 
@@ -17,7 +16,7 @@ from popcorn.reporters import report_hotspots, report_kdiff
 from popcorn.readers import LevelZeroTracerJsonReader
 from popcorn.structures import Case
 
-__version__ = importlib.metadata.version("popcorn")
+__version__ = "0.0.1"
 
 
 def main_cli() -> str | None:
@@ -118,14 +117,14 @@ def main_cli() -> str | None:
             # default to all analyzers
             args.a = "all"
 
-    if args.o or args.ot:  # file specified -> don't print to console
-        if not args.o:
-            args.o = "result"
-        else:
-            args.ot = "xlsx"
-    else:
+    if not (args.o or args.ot):  # file specified -> don't print to console
         args.o = ""
         args.ot = "console"
+    else:
+        if not args.o:
+            args.o = "result"
+        if not args.ot:
+            args.ot = "xlsx"
 
     if args.nu:
         print(

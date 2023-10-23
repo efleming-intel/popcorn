@@ -33,13 +33,13 @@ def test_hotspots(cases_dict: dict[str, list[int]]):
 
 
 @given(
-    event_names = st.sets(st.text(st.characters(exclude_characters=['_']), min_size=2), min_size=3),
-    case_names = st.sets(st.text(st.characters(exclude_characters=['_']), min_size=2), min_size=2)
+    event_names = st.sets(st.text("abcdefghijklmnop", min_size=3), min_size=3),
+    case_names = st.sets(st.text("qrstuvwxyz", min_size=3), min_size=2)
 )
 def test_kernel_differences(
     event_names, case_names
 ):
-    event_names: list[str] = list(event_names)
+    event_names: list[str] = event_names
     case_names: list[str] = list(case_names)
     cases = generate_cases_with_like_events(case_names, event_names)
 

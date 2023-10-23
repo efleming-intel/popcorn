@@ -1,4 +1,5 @@
 build
+.coverage
 dist
 .hypothesis
 popcorn.egg-info
