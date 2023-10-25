@@ -27,6 +27,7 @@ jobs:
 
     env:
       STATE: "pending"
+
     steps:
       - name: Check if author is repo admin
         env:
@@ -87,5 +88,5 @@ jobs:
         run: |
           gh api "repos/$repo/statuses/$sha" \
               --raw-field state="$STATE" \
-              --raw-field context='Non-admin PR approval' \
+              --raw-field context='PR approval' \
               --raw-field target_url="https://github.com/$repo/actions/runs/$id"
