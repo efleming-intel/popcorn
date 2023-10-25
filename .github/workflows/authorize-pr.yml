@@ -1,4 +1,4 @@
-name: Check PR approval for non-admin authors
+name: Authorize PR
 
 on:
   # PR into main opened, reopened, or synchronized
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   checkapproval:
-    name: Check PR approval
+    name: Review PR permissions
 
     runs-on: ubuntu-latest
 
@@ -29,7 +29,7 @@ jobs:
       STATE: "pending"
 
     steps:
-      - name: Check if author is repo admin
+      - name: Check if author is a repo admin
         env:
           author: ${{ github.event.pull_request.user.login }}
           repo: ${{ github.repository }}
@@ -47,7 +47,7 @@ jobs:
               echo "STATE=success" >> "$GITHUB_ENV"
           fi
 
-      - name: Check for PR approval
+      - name: Require at least 2 approvals for a non-admin's PR
         # Run only if the previous step failed
         if: env.STATE != 'success'
         env:
@@ -63,23 +63,23 @@ jobs:
                   )
                   | to_entries
                   | map(select(.value == "APPROVED"))
-                  | length > 0
+                  | length > 1
               ')
 
           if [[ $approved != 'true' ]]; then
-              echo "No PR approval found" >&2
+              echo "At least 2 approvals required for non-admin authors!" >&2
 
               # Set failure state in environment
               echo "STATE=failure" >> "$GITHUB_ENV"
               exit 0
           fi
 
-          echo "PR approval found" >&2
+          echo "2+ PR approvals found" >&2
 
           # Set success state in environment
           echo "STATE=success" >> "$GITHUB_ENV"
 
-      - name: Set result in separate status
+      - name: Submit PR authorization status
         env:
           GITHUB_TOKEN: ${{ github.token }}
           sha: ${{ github.event.pull_request.head.sha }}
@@ -88,5 +88,5 @@ jobs:
         run: |
           gh api "repos/$repo/statuses/$sha" \
               --raw-field state="$STATE" \
-              --raw-field context='PR approval' \
+              --raw-field context='PR Authorization' \
               --raw-field target_url="https://github.com/$repo/actions/runs/$id"
