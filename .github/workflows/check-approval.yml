@@ -11,6 +11,9 @@ on:
     types:
       - submitted
 
+permissions:
+  statuses: write
+
 jobs:
   checkapproval:
     name: Check PR approval
