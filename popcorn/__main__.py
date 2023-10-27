@@ -16,7 +16,7 @@ from popcorn.reporters import report_hotspots, report_kdiff
 from popcorn.readers import LevelZeroTracerJsonReader
 from popcorn.structures import Case
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 
 def main_cli() -> str | None:
