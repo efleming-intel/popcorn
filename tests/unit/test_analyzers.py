@@ -3,16 +3,7 @@ from math import comb as possible_combinations
 
 from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.structures import Case, Event
-from tests.unit.common_utils import generate_event_durs, prep_mock_case
-
-
-def generate_cases_with_like_events(case_names: list[str], event_names: list[str]):
-    cases: list[Case] = []
-    for case_name in case_names:
-        cases.append(prep_mock_case(
-            case_name, generate_event_durs(event_names)
-        ))
-    return cases
+from tests.unit.common_utils import generate_cases_with_like_events, prep_mock_case
 
 
 @given(

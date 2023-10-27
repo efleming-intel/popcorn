@@ -1,8 +1,9 @@
 from typing import Callable
 from openpyxl import Workbook
+from popcorn.analyzers import hotspots, kernel_differences
 
-from popcorn.interfaces import Kettle, MDTables, CSVArchive
-from popcorn.structures import Event
+from popcorn.interfaces import Kettle, MDTables, CSVArchive, Verbosity
+from popcorn.structures import Case, Event
 
 
 def _ensure_console_text_fits(row: list[str]) -> list[str]:
@@ -19,16 +20,21 @@ def _report(
     keyrowfn: Callable[..., list[str]],
     sheetnamefn: Callable[[str], str],
     wb: Kettle | MDTables | Workbook | CSVArchive,
+    case_count: list[int]
 ):
     items = list(result.items())
     if isinstance(wb, Kettle):
-        for item in items:
+        for i in range(len(items)):
+            if wb.verbosity == Verbosity.VERBOSE:
+                print(f"Displaying all {case_count[i]} items:")
+            else:
+                print(f"Displaying the most interesting {2 * wb.verbosity.limit} items out of {case_count[i]}:")
             wb.print_table(
-                title=sheetnamefn(item[0]),
+                title=sheetnamefn(items[i][0]),
                 fields=header,
                 data=[
                     _ensure_console_text_fits(keyrowfn(event_row))
-                    for event_row in item[1]
+                    for event_row in items[i][1]
                 ],
             )
             print("\n")
@@ -55,10 +61,11 @@ def _hotspots_sheet_name(item_name: str) -> str:
 
 
 def report_hotspots(
-    result: dict[str, list[Event]], wb: Kettle | MDTables | Workbook | CSVArchive
+    cases: list[Case], wb: Kettle | MDTables | Workbook | CSVArchive
 ):
+    result = hotspots(cases)
     hotspot_header = Event.header()
-    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb)
+    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:
@@ -66,9 +73,10 @@ def _kernel_differences_sheet_name(item_name: str) -> str:
 
 
 def report_kdiff(
-    result: dict[str, list[tuple[Event, int]]],
+    cases: list[Case],
     wb: Kettle | MDTables | Workbook | CSVArchive,
 ):
+    result = kernel_differences(cases)
     kdiff_header = ["diff"] + Event.header()
     _report(
         result,
@@ -76,4 +84,5 @@ def report_kdiff(
         lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].row()),
         _kernel_differences_sheet_name,
         wb,
+        [len(case.events) for case in cases]
     )
