@@ -30,3 +30,12 @@ def prep_mock_case(
     reader.create_event_from_trace_item = None
     reader.read = MagicMock(return_value=events)
     return Case(file=name, reader=reader, uniques=uniques, cat=category)
+
+
+def generate_cases_with_like_events(case_names: list[str], event_names: list[str]):
+    cases: list[Case] = []
+    for case_name in case_names:
+        cases.append(prep_mock_case(
+            case_name, generate_event_durs(event_names)
+        ))
+    return cases

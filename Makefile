@@ -5,13 +5,10 @@ venv:
 	python3 -m venv .venv
 
 test:
-	pytest
+	pytest --cov=popcorn tests/
 
 testenv:
 	pip install -e .[test]
-
-testcov:
-	pytest --cov=src/popcorn tests/
 
 build:
 	python -m build

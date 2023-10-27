@@ -4,6 +4,10 @@ Any notable change to this project will be documented in this file.
 
 ## Unreleased
 
+## [v0.0.2 Release (27-10-2023)](https://github.com/efleming-intel/popcorn/tree/v0.0.2)
+
+- print display item count in console output
+- folder input support (e.g. popcorn -f dirname)
 
 ## [v0.0.1 Release (23-10-2023)](https://github.com/efleming-intel/popcorn/tree/v0.0.1)
 
