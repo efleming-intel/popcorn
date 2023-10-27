@@ -10,7 +10,6 @@ import argparse
 from openpyxl import Workbook
 import sys
 
-from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
 from popcorn.readers import LevelZeroTracerJsonReader
@@ -132,7 +131,7 @@ def main_cli() -> str | None:
         )
 
     # extract cases from json files
-    cases = []
+    cases: list[Case] = []
     reader = (
         LevelZeroTracerJsonReader()
     )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
@@ -164,17 +163,17 @@ def main_cli() -> str | None:
 
     match args.a:
         case "all":
-            report_hotspots(hotspots(cases), report)
-            report_kdiff(kernel_differences(cases), report)
+            report_hotspots(cases, report)
+            report_kdiff(cases, report)
         case "kdiff":
-            report_kdiff(kernel_differences(cases), report)
+            report_kdiff(cases, report)
         case "pops+kdiff":
-            report_hotspots(hotspots(cases), report)
-            report_kdiff(kernel_differences(cases), report)
+            report_hotspots(cases, report)
+            report_kdiff(cases, report)
         case "pops":
-            report_hotspots(hotspots(cases), report)
+            report_hotspots(cases, report)
         case _:  # default is just hotspots
-            report_hotspots(hotspots(cases), report)
+            report_hotspots(cases, report)
 
     report.save(args.o)
     return None
