@@ -7,6 +7,7 @@ Args:
 """
 
 import argparse
+import os
 from openpyxl import Workbook
 import sys
 
@@ -30,6 +31,12 @@ def main_cli() -> str | None:
         nargs="+",
         type=str,
         help="input trace files (provide at least one)",
+    )
+
+    parser.add_argument("-f", "--folder", "--dir", "--directory",
+        action="store_true",
+        help="input name(s) reference(s) folder(s) and not file(s)",
+        dest="folder_input",
     )
 
     parser.add_argument(
@@ -94,9 +101,33 @@ def main_cli() -> str | None:
 
     args = parser.parse_args()
 
-    input_file_count = len(
-        args.files
-    )  # argparse will ensure at least one file is given
+    reader = (
+        LevelZeroTracerJsonReader()
+    )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
+
+    if args.folder_input:
+        args.folders: list[str] = args.files
+        args.files: list[str] = []
+        for folder in args.folders:
+            if os.path.exists(os.path.abspath(folder)):
+                supported_files: list[str] = []
+                for (dirpath, _, filenames) in os.walk(folder):
+                    supported_files.extend([
+                        os.path.join(dirpath, filename) for filename in 
+                        filter(lambda f: f.endswith(reader.format), filenames)
+                    ])
+                if len(supported_files) < 1 and len(args.folders) > 1:
+                    print(f"Could not find any supported files within {folder}!\n")
+                else:
+                    args.files.extend(supported_files)
+            else:
+                print(f"{folder} does not exist!\n")
+    
+    input_file_count = len(args.files)
+    # argparse will ensure args.files > 0 when input type isn't a folder
+    if input_file_count < 1:
+        # input was a foldername which had no supported files in it
+        return f"Error! No supported file(s) found in {' or '.join(args.folders)}!\n"
 
     output_verbosity = Verbosity.STANDARD
     if args.verbose:
@@ -132,9 +163,6 @@ def main_cli() -> str | None:
 
     # extract cases from json files
     cases: list[Case] = []
-    reader = (
-        LevelZeroTracerJsonReader()
-    )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
     for input_filename in args.files:
         cases.append(
             Case(
