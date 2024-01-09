@@ -9,6 +9,8 @@ popcorn is a cross-platform kernel trace log analyzer written in Python, intende
 
 ## Installation
 
+Note: _Python 3.10 or higher_ is required for popcorn to run correctly.
+
 ```bash
 git clone https://www.github.com/efleming-intel/popcorn
 cd popcorn
