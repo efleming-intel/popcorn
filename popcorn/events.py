@@ -16,7 +16,7 @@ class Event(ABC):
 
 
     def __eq__(self, other):
-        if isinstance(other, BaseEvent):
+        if isinstance(other, Event):
             return self.name == other.name
         return False
 
@@ -28,8 +28,8 @@ class Event(ABC):
             str(self.dur),]
             
     @abstractmethod
-    def header() -> list[str]:
-        raise NotImplementedError("Error header")
+    def header() -> list[str]: #TODO: fix this
+        return [ "name", "cat", "dur"]
       
 
 
@@ -75,7 +75,6 @@ class OneDnnEvent(Event):
             str(self.kernel),
         ]
     
-    @staticmethod
     def header() -> list[str]:
         return ["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "args"]
 
@@ -118,6 +117,5 @@ class LevelZeroEvent(Event):
             str(self.args_id),
         ]
     
-    @staticmethod
     def header() -> list[str]:
         return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
