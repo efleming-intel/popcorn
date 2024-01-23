@@ -36,7 +36,7 @@ class dnn_log:
         data = []
 
         with open(self.filename) as f:
-            for line in csv.DictReader(f, fieldnames=('onednn_verbose','timestamp','backend','exec','arch','type', 'jit', 'pass', 'fmt', 'opt', 'alg', 'shape', 'time', 'dummy')):
+            for line in csv.DictReader(f, fieldnames=('onednn_verbose','timestamp','backend','exec','arch','type', 'kernel', 'pass', 'fmt', 'opt', 'alg', 'shape', 'time', 'dummy')):
                 if(line['timestamp'] in ['info', 'graph', 'primitive']):
                     continue
                 else:

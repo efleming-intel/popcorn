@@ -3,7 +3,9 @@ from openpyxl import Workbook
 from popcorn.analyzers import hotspots, kernel_differences
 
 from popcorn.interfaces import Kettle, MDTables, CSVArchive, Verbosity
-from popcorn.structures import Case, Event
+from popcorn.structures import Case
+from popcorn.events import Event
+
 
 
 def _ensure_console_text_fits(row: list[str]) -> list[str]:
