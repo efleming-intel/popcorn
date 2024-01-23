@@ -77,13 +77,13 @@ class OnednnTracerCsvReader(Reader):
     def create_event_from_trace_item(self, item) -> Event:
         event = Event()
         event.ph = _getv(item, "ph", default="N/A")
-        event.tid = _getv(item, "tid")
-        event.pid = _getv(item, "pid")
-        event.name = _getv(item, "name", default="N/A")
-        event.cat = _getv(item, "cat", default="N/A")
-        event.ts = _getv(item, "ts")
-        event.id = _getv(item, "id")
-        event.dur = _getv(item, "dur", default=0)
+        event.tid = _getv(item, "tid", default="N/A")
+        event.pid = _getv(item, "pid", default="N/A")
+        event.name = _getv(item, "type", default="N/A")
+        event.cat = _getv(item, "backend", default="N/A")
+        event.ts = _getv(item, "timestamp")
+        event.id = _getv(item, "id", default="N/A")
+        event.dur = _getv(item, "time", default=0)
         event.args_id = (
             item["args"]["id"]
             if (("args" in item.keys()) and ("id" in item["args"].keys()))
@@ -96,28 +96,26 @@ class OnednnTracerCsvReader(Reader):
             unique_events: dict[str, Event] = {}
 
             new_log = dnn_log()
-            #print("Filename 1:  ->  " + filename)
             data = new_log.load_csv_log(filename)
             
             for item in data:
                 item_name = _getv(item, "name", default="N/A")
-                item_category = _getv(item, "cat", default=False)
+                item_category = _getv(item, "backend", default=False)
                 same_category = item_category and (item_category == cat)
                 if (not cat) or same_category:  # no filter applied or category matches
-                    if item_name in unique_events:  # collapse uniques duration
-                        unique_events[item_name].dur += _getv(item, "dur", default=0)
-                    else:
-                        unique_events[item_name] = self.create_event_from_trace_item(item)
+                    #if item_name in unique_events:  # collapse uniques duration
+                       # unique_events[item_name].dur += _getv(item, "dur", default=0)
+                    #else:
+                    unique_events[item_name] = self.create_event_from_trace_item(item)
 
-                    return list(unique_events.values())
+            return list(unique_events.values())
 
         else:
             trace_events: list[Event] = []
-            #print("Filename 2:  ->  " + filename)
             new_log = dnn_log()
             data = new_log.load_csv_log(filename)
             for item in data:
-                item_category = _getv(item, "cat", default=False)
+                item_category = _getv(item, "backend", default=False)
                 same_category = item_category and (item_category == cat)
                 if (not cat) or same_category:  # no filter applied or category matches
                     trace_events.append(self.create_event_from_trace_item(item))
