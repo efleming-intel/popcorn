@@ -14,7 +14,6 @@ class dnn_log:
 
         return data
 
-    
 
     def load_dnnl_log(self):
         import csv
@@ -23,6 +22,7 @@ class dnn_log:
         with open(self.filename) as f:
             for line in csv.DictReader(f, fieldnames=('onednn_verbose','timestamp','backend','exec','arch','type', 'kernel', 'pass', 'fmt', 'opt', 'alg', 'shape', 'time', 'dummy')):
                 if(line['timestamp'] in ['info', 'graph', 'primitive']):
+                    # break if it is a info line, not needed
                     continue
                 else:
                     data.append(line)

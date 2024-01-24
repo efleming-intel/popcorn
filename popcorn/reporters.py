@@ -1,10 +1,9 @@
 from typing import Callable
 from openpyxl import Workbook
-from popcorn.analyzers import hotspots, kernel_differences
 
+from popcorn.analyzers import hotspots, kernel_differences
 from popcorn.interfaces import Kettle, MDTables, CSVArchive, Verbosity
 from popcorn.structures import Case
-from popcorn.events import Event
 
 
 
@@ -63,7 +62,7 @@ def _hotspots_sheet_name(item_name: str) -> str:
 
 
 def report_hotspots(
-    cases: list[Case],  wb: Kettle | MDTables | Workbook | CSVArchive
+    cases: list[Case], wb: Kettle | MDTables | Workbook | CSVArchive
 ):
     result = hotspots(cases)
     hotspot_first_event = cases[0].getfirstitem()

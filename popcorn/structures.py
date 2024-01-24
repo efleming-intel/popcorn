@@ -1,4 +1,4 @@
-from popcorn.events import Event, OneDnnEvent, LevelZeroEvent
+from popcorn.events import Event
 from abc import ABC, abstractmethod
 import os
 

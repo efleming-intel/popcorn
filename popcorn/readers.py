@@ -74,7 +74,6 @@ class LevelZeroTracerJsonReader(Reader):
 
 
 class OnednnTracerCsvReader(Reader):
-
     TYPES = {'call': 'B', 'return': 'E', 'exec': 'X'}
 
     def __init__(self):
