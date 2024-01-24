@@ -27,9 +27,9 @@ class Event(ABC):
             str(self.ts),
             str(self.dur),]
             
-    @abstractmethod
+    @staticmethod
     def header() -> list[str]: #TODO: fix this
-        return [ "name", "cat", "dur"]
+        return [ "name", "cat","ts", "dur"]
       
 
 
@@ -74,8 +74,9 @@ class OneDnnEvent(Event):
             str(self.shape),
             str(self.kernel),
         ]
-    
-    def header() -> list[str]:
+        
+    @staticmethod
+    def header(self) -> list[str]:
         return ["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "args"]
 
 class LevelZeroEvent(Event):
@@ -116,6 +117,7 @@ class LevelZeroEvent(Event):
             str(self.dur),
             str(self.args_id),
         ]
-    
-    def header() -> list[str]:
+        
+    @staticmethod
+    def header(self) -> list[str]:
         return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]

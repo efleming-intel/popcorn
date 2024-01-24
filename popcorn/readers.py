@@ -1,7 +1,7 @@
 
 from popcorn.dnn import dnn_log
 from popcorn.structures import Reader
-from popcorn.structures import Event, OneDnnEvent, LevelZeroEvent
+from popcorn.events import Event, OneDnnEvent, LevelZeroEvent
 from json import load as load_json
 import os
 import threading
