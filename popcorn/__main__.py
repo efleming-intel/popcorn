@@ -99,12 +99,16 @@ def main_cli() -> str | None:
         version="%(prog)s {version}".format(version=__version__),
     )
 
+    parser.add_argument(
+        "-dnnl",
+        action="store_true",
+        help="parse onednn csv logs",
+    )
     args = parser.parse_args()
-
-    reader = (
-    #LevelZeroTracerJsonReader()
-        OnednnTracerCsvReader()
-    )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
+    
+    reader = (OnednnTracerCsvReader()) if (args.dnnl) else (LevelZeroTracerJsonReader())
+    
+    # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:
         args.folders: list[str] = args.files

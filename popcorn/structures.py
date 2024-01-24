@@ -39,6 +39,14 @@ class Case:
 
         return None
 
+
+    def getfirstitem(self) -> Event | None:
+        if(len(self.events) > 0):
+            return self.events[0] if (self.events[0] != None) else None
+        
+        return None
+
+
     @property
     def title(self) -> str:
         return (

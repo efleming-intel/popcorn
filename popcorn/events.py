@@ -27,9 +27,9 @@ class Event(ABC):
             str(self.ts),
             str(self.dur),]
             
-    @staticmethod
-    def header() -> list[str]: #TODO: fix this
-        return [ "name", "cat","ts", "dur"]
+    @abstractmethod
+    def header(self) -> list[str]: #TODO: fix this
+        pass
       
 
 
@@ -51,9 +51,9 @@ class OneDnnEvent(Event):
         self.ph = ph
         self.tid = tid
         self.pid = pid
-        self.args = args
-        self.shape = shape
         self.kernel = kernel
+        self.shape = shape
+        self.args = args
 
 
     def __eq__(self, other):
@@ -70,14 +70,14 @@ class OneDnnEvent(Event):
             self.cat,
             str(self.ts),
             str(self.dur),
-            self.args,
-            str(self.shape),
             str(self.kernel),
+            str(self.shape),
+            self.args,
         ]
         
-    @staticmethod
     def header(self) -> list[str]:
-        return ["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "args"]
+        return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "args"])
+
 
 class LevelZeroEvent(Event):
     def __init__(
@@ -118,6 +118,5 @@ class LevelZeroEvent(Event):
             str(self.args_id),
         ]
         
-    @staticmethod
     def header(self) -> list[str]:
-        return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
+        return (["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"])

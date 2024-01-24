@@ -26,5 +26,4 @@ class dnn_log:
                     continue
                 else:
                     data.append(line)
-                    print(line)
         return data

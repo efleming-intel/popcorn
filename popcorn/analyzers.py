@@ -1,7 +1,7 @@
 from itertools import combinations
 
 from popcorn.structures import Case
-from popcorn.events import Event, OneDnnEvent, LevelZeroEvent
+from popcorn.events import Event
 
 
 def _hs(cs: Case) -> list[Event]:

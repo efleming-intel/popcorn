@@ -63,11 +63,17 @@ def _hotspots_sheet_name(item_name: str) -> str:
 
 
 def report_hotspots(
-    cases: list[Case], wb: Kettle | MDTables | Workbook | CSVArchive
+    cases: list[Case],  wb: Kettle | MDTables | Workbook | CSVArchive
 ):
     result = hotspots(cases)
-    hotspot_header = Event.header()
-    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
+    hotspot_header = cases[0].getfirstitem()
+
+    if(hotspot_header is None):
+        print("Warning: Hotspots empty, no events found")
+        return
+    event_hotspot_header = hotspot_header.header()
+
+    _report(result, event_hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:

@@ -1,4 +1,3 @@
-
 from popcorn.dnn import dnn_log
 from popcorn.structures import Reader
 from popcorn.events import Event, OneDnnEvent, LevelZeroEvent
@@ -17,7 +16,7 @@ class LevelZeroTracerJsonReader(Reader):
         super().__init__(format="json")
 
     def create_event_from_trace_item(self, item) -> Event:
-        event = Event()
+        event = LevelZeroEvent()
         event.ph = _getv(item, "ph", default="N/A")
         event.tid = _getv(item, "tid")
         event.pid = _getv(item, "pid")
