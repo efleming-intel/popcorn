@@ -97,6 +97,7 @@ class OnednnTracerCsvReader(Reader):
         event.args = []
         event.kernel = _getv(item, "kernel", default="N/A")
         event.shape = _getv(item, "shape", default="N/A")
+        event.ncalls = 1
         return event
 
     def read(self, filename: str, uniques: bool = True, cat: str | None = None) -> list[OneDnnEvent]:
@@ -114,6 +115,7 @@ class OnednnTracerCsvReader(Reader):
                     ) or same_category:  # no filter applied or category matches
                         if item_name in unique_events:  # collapse uniques duration
                             unique_events[item_name].dur += float(_getv(item, "time", default=0))
+                            unique_events[item_name].ncalls += 1
                         else:
                             unique_events[
                                 item_name

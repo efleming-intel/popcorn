@@ -107,14 +107,12 @@ def main_cli() -> str | None:
     args = parser.parse_args()
     
     reader = (OnednnTracerCsvReader()) if (args.dnnl) else (LevelZeroTracerJsonReader())
-    
     # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:
         args.folders: list[str] = args.files
         args.files: list[str] = []
         for folder in args.folders:
-            print(folder)
             if os.path.exists(os.path.abspath(folder)):
                 supported_files: list[str] = []
                 for (dirpath, _, filenames) in os.walk(folder):

@@ -6,7 +6,7 @@ class Event(ABC):
         name="N/A",
         cat="N/A",
         ts=0,
-        dur=0,
+        dur=0.0,
     ):
 
         self.name = name
@@ -44,7 +44,8 @@ class OneDnnEvent(Event):
         kernel="N/A",
         shape="N/A",
         ts=0,
-        dur=0,
+        dur=0.0,
+        ncalls=0,
         args=[],
     ):
         Event.__init__(self, name, cat, ts, dur) 
@@ -53,6 +54,7 @@ class OneDnnEvent(Event):
         self.pid = pid
         self.kernel = kernel
         self.shape = shape
+        self.ncalls = ncalls
         self.args = args
 
 
@@ -72,11 +74,12 @@ class OneDnnEvent(Event):
             str(self.dur),
             str(self.kernel),
             str(self.shape),
+            str(self.ncalls),
             self.args,
         ]
         
     def header(self) -> list[str]:
-        return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "args"])
+        return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape","ncalls", "args"])
 
 
 class LevelZeroEvent(Event):
