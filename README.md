@@ -31,9 +31,9 @@ __Dependencies:__
 
 ### Arguments
   - `{-h,--help}` -- display help message and exit.
-  - `{-a,--analyzer} STRING` -- pops -> hotspots; kdiff -> kernel differences. Default is `all`.
+  - `{-a,--analyzer} STRING` -- `pops` -> hotspots; `kdiff` -> kernel differences. Default is `all`.
   - `{-o,--output} STRING` -- output file name. Default is `result`.
-  - `{-ot,--output-type} STRING` -- output type. Default is `result`.
+  - `{-ot,--output-type} STRING` -- output type. Default is `xlsx`.
   - `{-dnnl}` -- enable oneDNN verbose log parser mode. Default is `False`.
   - `{--no-uniques}` -- disable grouping for similar types. Default is `False`.
   - `{-f,--folder}` -- enable directory as input. Default is `False`.
