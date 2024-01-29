@@ -1,6 +1,7 @@
-from popcorn.events import Event
 from abc import ABC, abstractmethod
 import os
+
+from popcorn.events import Event
 
 
 

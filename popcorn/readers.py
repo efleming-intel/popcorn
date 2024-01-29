@@ -90,6 +90,8 @@ class OnednnTracerCsvReader(Reader):
         event.tid = self.thread_id
         event.pid = self.pid
         event.name = _getv(item, "type", default="N/A")
+        event.dname = _getv(item, "type", default="N/A")
+        event.name += _getv(item, "shape", default="N/A")
         event.cat = _getv(item, "backend", default="N/A")
         event.ts = _getv(item, "timestamp")
         event.id = _getv(item, "id", default="N/A")
@@ -122,7 +124,7 @@ class OnednnTracerCsvReader(Reader):
                             ] = self.create_event_from_trace_item(item)
 
             return list(unique_events.values())
-
+        
         else:    
             trace_events: list[OneDnnEvent] = []
             new_log = dnn_log()

@@ -28,7 +28,7 @@ class Event(ABC):
             str(self.dur),]
             
     @abstractmethod
-    def header(self) -> list[str]: #TODO: fix this
+    def header(self) -> list[str]: 
         pass
       
 
@@ -40,6 +40,7 @@ class OneDnnEvent(Event):
         tid=-1,
         pid=-1,
         name="N/A",
+        dname="N/A",
         cat="N/A",
         kernel="N/A",
         shape="N/A",
@@ -49,6 +50,7 @@ class OneDnnEvent(Event):
         args=[],
     ):
         Event.__init__(self, name, cat, ts, dur) 
+        self.dname = dname
         self.ph = ph
         self.tid = tid
         self.pid = pid
@@ -68,7 +70,7 @@ class OneDnnEvent(Event):
             self.ph,
             str(self.tid),
             str(self.pid),
-            self.name,
+            self.dname,
             self.cat,
             str(self.ts),
             str(self.dur),
@@ -79,7 +81,7 @@ class OneDnnEvent(Event):
         ]
         
     def header(self) -> list[str]:
-        return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape","ncalls", "args"])
+        return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "ncalls", "args"])
 
 
 class LevelZeroEvent(Event):

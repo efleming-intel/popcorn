@@ -28,7 +28,6 @@ class Kettle:
 
     def print_table(self, title: str, fields: list[str], data: list[list[str]]):
         table = PrettyTable(title=title, field_names=fields)
-
         limit = self.verbosity.limit
         if (limit > 0) and (len(data) > (2 * limit)):
             table.add_rows(data[:limit] + data[-limit:])

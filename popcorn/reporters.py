@@ -30,6 +30,7 @@ def _report(
                 print(f"Displaying all {case_count[i]} items:")
             else:
                 print(f"Displaying the most interesting {2 * wb.verbosity.limit} items out of {case_count[i]}:")
+
             wb.print_table(
                 title=sheetnamefn(items[i][0]),
                 fields=header,
