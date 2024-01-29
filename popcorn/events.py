@@ -79,9 +79,23 @@ class OneDnnEvent(Event):
             str(self.ncalls),
             self.args,
         ]
+    
+    def diff_row(self) -> list[str]:
+        return [
+            self.dname,
+            self.cat,
+            str(self.kernel),
+            str(self.shape),
+            str(self.ncalls),
+            self.args,
+        ]
+    
         
     def header(self) -> list[str]:
         return (["ph", "tid", "pid", "name", "cat", "ts", "dur", "kernel", "shape", "ncalls", "args"])
+    
+    def diff_header(self) -> list[str]:
+        return (["name", "cat", "kernel", "shape", "ncalls", "args"])
 
 
 class LevelZeroEvent(Event):
@@ -122,6 +136,20 @@ class LevelZeroEvent(Event):
             str(self.dur),
             str(self.args_id),
         ]
+    
+    def diff_row(self) -> list[str]:
+        return [
+            self.ph,
+            str(self.tid),
+            str(self.pid),
+            self.name,
+            self.cat,
+            str(self.id),
+            str(self.args_id),
+        ]
         
     def header(self) -> list[str]:
         return (["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"])
+    
+    def diff_header(self) -> list[str]:
+        return (["ph", "tid", "pid", "name", "cat", "id", "args_id"])

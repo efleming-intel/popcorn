@@ -91,12 +91,12 @@ def report_kdiff(
     if(hotspot_first_event is None):
         print("Warning: Hotspots empty, no events found")
         return
-    kdiff_header = ["diff"] + hotspot_first_event.header()
+    kdiff_header = ["diff"] + hotspot_first_event.diff_header()
 
     _report(
         result,
         kdiff_header,
-        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].row()),
+        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].diff_row()),
         _kernel_differences_sheet_name,
         wb,
         [len(case.events) for case in cases]
