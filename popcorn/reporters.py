@@ -7,8 +7,8 @@ from popcorn.structures import Case
 
 
 
-def _ensure_console_text_fits(row: list[str]) -> list[str]:
-    trunc_limit = 25
+def _ensure_console_text_fits(header: list[str], row: list[str]) -> list[str]:
+    trunc_limit = 25 if ('shape' not in header) else 35   # oneDNN primitive shape requires higher limit
     for i in range(len(row)):
         if (not str(row[i]).isdigit()) and (len(str(row[i])) > trunc_limit):
             row[i] = row[i][:trunc_limit]
@@ -35,7 +35,7 @@ def _report(
                 title=sheetnamefn(items[i][0]),
                 fields=header,
                 data=[
-                    _ensure_console_text_fits(keyrowfn(event_row))
+                    _ensure_console_text_fits(header, keyrowfn(event_row))
                     for event_row in items[i][1]
                 ],
             )
