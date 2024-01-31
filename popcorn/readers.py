@@ -71,8 +71,6 @@ class LevelZeroTracerJsonReader(Reader):
             return trace_events
 
 
-
-
 class OnednnTracerCsvReader(Reader):
     TYPES = {'call': 'B', 'return': 'E', 'exec': 'X'}
 

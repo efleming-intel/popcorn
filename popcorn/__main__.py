@@ -165,6 +165,10 @@ def main_cli() -> str | None:
             "!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!"
         )
 
+    # no category specified for onednn log -> default to primitive cat
+    if args.dnnl and args.category is not "primitive":
+        args.category = "primitive"
+    
     # extract cases from json files
     cases: list[Case] = []
     for input_filename in args.files:
