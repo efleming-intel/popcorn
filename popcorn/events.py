@@ -41,6 +41,7 @@ class OneDnnEvent(Event):
         pid=-1,
         name="N/A",
         dname="N/A",
+        arch = "N/A",
         cat="N/A",
         kernel="N/A",
         shape="N/A",
@@ -51,6 +52,7 @@ class OneDnnEvent(Event):
     ):
         Event.__init__(self, name, cat, ts, dur) 
         self.dname = dname
+        self.arch = arch
         self.ph = ph
         self.tid = tid
         self.pid = pid
@@ -70,6 +72,7 @@ class OneDnnEvent(Event):
             self.dname,
             str(self.dur),
             str(self.kernel),
+            str(self.arch),
             str(self.shape),
             str(self.ncalls),
             self.args,
@@ -79,6 +82,7 @@ class OneDnnEvent(Event):
         return [
             self.dname,
             str(self.kernel),
+            str(self.arch),
             str(self.shape),
             str(self.ncalls),
             self.args,
@@ -86,10 +90,10 @@ class OneDnnEvent(Event):
     
         
     def header(self) -> list[str]:
-        return (["name", "dur(ms)", "kernel", "shape", "ncalls", "args"])
+        return (["name", "dur(ms)", "kernel", "arch", "shape", "ncalls", "args"])
     
     def diff_header(self) -> list[str]:
-        return (["diff(ms)", "name", "kernel", "shape", "ncalls", "args"])
+        return (["diff(ms)", "name", "kernel", "arch", "shape", "ncalls", "args"])
 
 
 class LevelZeroEvent(Event):

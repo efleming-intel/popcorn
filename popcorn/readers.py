@@ -88,6 +88,7 @@ class OnednnTracerCsvReader(Reader):
         event.tid = self.thread_id
         event.pid = self.pid
         event.name = _getv(item, "type", default="N/A")
+        event.arch = _getv(item, "arch", default="N/A")
         event.dname = _getv(item, "type", default="N/A")
         event.name += _getv(item, "shape", default="N/A")
         event.cat = _getv(item, "backend", default="N/A")
