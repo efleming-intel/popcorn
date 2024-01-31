@@ -8,10 +8,11 @@ from popcorn.structures import Case
 
 
 def _ensure_console_text_fits(header: list[str], row: list[str]) -> list[str]:
-    trunc_limit = 25 if ('shape' not in header) else 35   # oneDNN primitive shape requires higher limit
+    trunc_limit = 25
     for i in range(len(row)):
         if (not str(row[i]).isdigit()) and (len(str(row[i])) > trunc_limit):
-            row[i] = row[i][:trunc_limit]
+            if header[i] is not 'shape': # print full shape of onednn primitive
+                row[i] = row[i][:trunc_limit]
     return row
 
 
@@ -71,9 +72,15 @@ def report_hotspots(
     if(hotspot_first_event is None):
         print("Warning: Hotspots empty, no events found")
         return
-    hotspot_header = hotspot_first_event.header()
 
-    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
+    _report(
+        result, 
+        hotspot_first_event.header(), 
+        lambda e: e.row(), 
+        _hotspots_sheet_name, 
+        wb, 
+        [len(case.events) for case in cases]
+        )
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:
@@ -85,13 +92,12 @@ def report_kdiff(
     wb: Kettle | MDTables | Workbook | CSVArchive,
 ):
     result = kernel_differences(cases)
-
     hotspot_first_event = cases[0].getfirstitem()
 
     if(hotspot_first_event is None):
         print("Warning: Hotspots empty, no events found")
         return
-    kdiff_header = ["diff"] + hotspot_first_event.diff_header()
+    kdiff_header = hotspot_first_event.diff_header()
 
     _report(
         result,

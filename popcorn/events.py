@@ -86,10 +86,10 @@ class OneDnnEvent(Event):
     
         
     def header(self) -> list[str]:
-        return (["name", "dur", "kernel", "shape", "ncalls", "args"])
+        return (["name", "dur(ms)", "kernel", "shape", "ncalls", "args"])
     
     def diff_header(self) -> list[str]:
-        return (["name", "kernel", "shape", "ncalls", "args"])
+        return (["diff(ms)", "name", "kernel", "shape", "ncalls", "args"])
 
 
 class LevelZeroEvent(Event):
@@ -146,4 +146,4 @@ class LevelZeroEvent(Event):
         return (["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"])
     
     def diff_header(self) -> list[str]:
-        return (["ph", "tid", "pid", "name", "cat", "id", "args_id"])
+        return (["diff", "ph", "tid", "pid", "name", "cat", "id", "args_id"])
