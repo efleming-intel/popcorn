@@ -1,16 +1,18 @@
 from typing import Callable
 from openpyxl import Workbook
+
 from popcorn.analyzers import hotspots, kernel_differences
-
 from popcorn.interfaces import Kettle, MDTables, CSVArchive, Verbosity
-from popcorn.structures import Case, Event
+from popcorn.structures import Case
 
 
-def _ensure_console_text_fits(row: list[str]) -> list[str]:
+
+def _ensure_console_text_fits(header: list[str], row: list[str]) -> list[str]:
     trunc_limit = 25
     for i in range(len(row)):
         if (not str(row[i]).isdigit()) and (len(str(row[i])) > trunc_limit):
-            row[i] = row[i][:trunc_limit]
+            if header[i] is not 'shape': # print full shape of onednn primitive
+                row[i] = row[i][:trunc_limit]
     return row
 
 
@@ -29,11 +31,12 @@ def _report(
                 print(f"Displaying all {case_count[i]} items:")
             else:
                 print(f"Displaying the most interesting {2 * wb.verbosity.limit} items out of {case_count[i]}:")
+
             wb.print_table(
                 title=sheetnamefn(items[i][0]),
                 fields=header,
                 data=[
-                    _ensure_console_text_fits(keyrowfn(event_row))
+                    _ensure_console_text_fits(header, keyrowfn(event_row))
                     for event_row in items[i][1]
                 ],
             )
@@ -64,8 +67,20 @@ def report_hotspots(
     cases: list[Case], wb: Kettle | MDTables | Workbook | CSVArchive
 ):
     result = hotspots(cases)
-    hotspot_header = Event.header()
-    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
+    hotspot_first_event = cases[0].getfirstitem()
+
+    if(hotspot_first_event is None):
+        print("Warning: Hotspots empty, no events found")
+        return
+
+    _report(
+        result, 
+        hotspot_first_event.header(), 
+        lambda e: e.row(), 
+        _hotspots_sheet_name, 
+        wb, 
+        [len(case.events) for case in cases]
+        )
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:
@@ -77,11 +92,16 @@ def report_kdiff(
     wb: Kettle | MDTables | Workbook | CSVArchive,
 ):
     result = kernel_differences(cases)
-    kdiff_header = ["diff"] + Event.header()
+    hotspot_first_event = cases[0].getfirstitem()
+
+    if(hotspot_first_event is None):
+        print("Warning: Hotspots empty, no events found")
+        return
+
     _report(
         result,
-        kdiff_header,
-        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].row()),
+        hotspot_first_event.diff_header(),
+        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].diff_row()),
         _kernel_differences_sheet_name,
         wb,
         [len(case.events) for case in cases]

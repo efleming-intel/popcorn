@@ -13,7 +13,7 @@ import sys
 
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
-from popcorn.readers import LevelZeroTracerJsonReader
+from popcorn.readers import LevelZeroTracerJsonReader, OnednnTracerCsvReader
 from popcorn.structures import Case
 
 __version__ = "0.0.2"
@@ -99,11 +99,15 @@ def main_cli() -> str | None:
         version="%(prog)s {version}".format(version=__version__),
     )
 
+    parser.add_argument(
+        "-dnnl",
+        action="store_true",
+        help="parse onednn csv logs",
+    )
     args = parser.parse_args()
-
-    reader = (
-        LevelZeroTracerJsonReader()
-    )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
+    
+    reader = (OnednnTracerCsvReader()) if (args.dnnl) else (LevelZeroTracerJsonReader())
+    # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:
         args.folders: list[str] = args.files
@@ -161,6 +165,10 @@ def main_cli() -> str | None:
             "!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!"
         )
 
+    # no category specified for onednn log -> default to primitive cat
+    if args.dnnl and args.category is not "primitive":
+        args.category = "primitive"
+    
     # extract cases from json files
     cases: list[Case] = []
     for input_filename in args.files:
