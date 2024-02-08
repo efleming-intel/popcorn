@@ -1,4 +1,4 @@
-from json import load as load_json
+from ijson import items as iterate_json_items
 
 from popcorn.structures import Event, Reader
 
@@ -33,8 +33,7 @@ class LevelZeroTracerJsonReader(Reader):
             unique_events: dict[str, Event] = {}
 
             with open(filename, "r") as f:
-                data = load_json(f)
-                for item in data["traceEvents"]:
+                for item in iterate_json_items(f, "traceEvents.item"):
                     item_name = _getv(item, "name", default="N/A")
                     item_category = _getv(item, "cat", default=False)
                     same_category = item_category and (item_category == cat)
@@ -55,8 +54,7 @@ class LevelZeroTracerJsonReader(Reader):
             trace_events: list[Event] = []
 
             with open(filename, "r") as f:
-                data = load_json(f)
-                for item in data["traceEvents"]:
+                for item in iterate_json_items(f, "traceEvents.item"):
                     item_category = _getv(item, "cat", default=False)
                     same_category = item_category and (item_category == cat)
                     if (

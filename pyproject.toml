@@ -10,7 +10,7 @@ description = "cross-platform kernel trace analyzer"
 dynamic = ["readme"]
 requires-python = ">=3.8"
 keywords = ["kernel", "analyzer", "hotspots", "trace", "log", "tool"]
-dependencies = ["openpyxl", "prettytable"]
+dependencies = ["ijson", "openpyxl", "prettytable"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
