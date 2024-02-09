@@ -32,7 +32,7 @@ class LevelZeroTracerJsonReader(Reader):
         if uniques:
             unique_events: dict[str, Event] = {}
 
-            with open(filename, "r") as f:
+            with open(filename, "rb") as f:
                 for item in iterate_json_items(f, "traceEvents.item"):
                     item_name = _getv(item, "name", default="N/A")
                     item_category = _getv(item, "cat", default=False)
@@ -53,7 +53,7 @@ class LevelZeroTracerJsonReader(Reader):
         else:
             trace_events: list[Event] = []
 
-            with open(filename, "r") as f:
+            with open(filename, "rb") as f:
                 for item in iterate_json_items(f, "traceEvents.item"):
                     item_category = _getv(item, "cat", default=False)
                     same_category = item_category and (item_category == cat)
