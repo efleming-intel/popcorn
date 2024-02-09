@@ -156,11 +156,6 @@ def main_cli() -> str | None:
         if not args.ot:
             args.ot = "xlsx"
 
-    if args.nu:
-        print(
-            "!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!"
-        )
-
     # extract cases from json files
     cases: list[Case] = []
     for input_filename in args.files:
@@ -180,6 +175,7 @@ def main_cli() -> str | None:
             report = Workbook()
         case "console":
             report = Kettle(output_verbosity)
+            print("\nNote: When popcorn outputs to console, it truncates the names in favor of displaying the table more neatly.\nFor the most verbose results, please output to a file.\n")
         case "csv":
             report = CSVArchive()
         case "md":
