@@ -13,20 +13,13 @@ class LevelZeroTracerJsonReader(Reader):
 
     def create_event_from_trace_item(self, item) -> Event:
         event = Event()
+        event.dur = _getv(item, "dur", default=0)
         event.num_calls = 1
         event.ph = _getv(item, "ph", default="N/A")
-        event.tid = _getv(item, "tid")
         event.pid = _getv(item, "pid")
         event.name = _getv(item, "name", default="N/A")
         event.cat = _getv(item, "cat", default="N/A")
         event.ts = _getv(item, "ts")
-        event.id = _getv(item, "id")
-        event.dur = _getv(item, "dur", default=0)
-        event.args_id = (
-            item["args"]["id"]
-            if (("args" in item.keys()) and ("id" in item["args"].keys()))
-            else -1
-        )
         return event
 
     def read(self, filename: str, uniques: bool = True, cat: str | None = None) -> list[Event]:

@@ -5,15 +5,13 @@ from tests.unit.common_utils import prep_mock_case
 # test Event
 def test_initialized_event_defaults():
     event = Event()
+    assert event.dur == 0
+    assert event.num_calls == 1
     assert event.ph == ""
-    assert event.tid == -1
     assert event.pid == -1
     assert event.name == "N/A"
     assert event.cat == "N/A"
     assert event.ts == 0
-    assert event.id == -1
-    assert event.dur == 0
-    assert event.args_id == -1
 
 
 def test_event_equivalence():
@@ -27,15 +25,12 @@ def test_event_equivalence():
 
 def test_event_row():
     event_dict: dict[str, str | int] = {
+        "dur": 3459876,
         "ph": "X",
-        "tid": 989081238,
         "pid": 1,
         "name": "gen_conv",
         "cat": "gpu_op",
-        "ts": 87612348765,
-        "id": 12345,
-        "dur": 3459876,
-        "args_id": 6547
+        "ts": 87612348765
     }
     event = Event()
     for prop in event_dict.keys():
@@ -53,13 +48,32 @@ def test_event_row():
 
 
 def test_event_header():
-    expected_header = ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
+    expected_header = [
+            "dur",
+            "# calls",
+            "ph",
+            "pid",
+            "name",
+            "category",
+            "timestamp"
+        ]
+    expected_kdiff_header = [
+            "diff",
+            "name",
+            "cat"
+        ]
     actual_header = Event.header()
+    actual_kdiff_header = Event.kdiff_header()
 
     for s in expected_header:
         assert s in actual_header
     for s in actual_header:
         assert s in expected_header
+
+    for s in expected_kdiff_header:
+        assert s in actual_kdiff_header
+    for s in actual_kdiff_header:
+        assert s in expected_kdiff_header
 
 
 # test Case

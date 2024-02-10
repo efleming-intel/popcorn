@@ -6,26 +6,20 @@ class Event:
     def __init__(
         self,
         dur=0,
-        num_calls=0,
+        num_calls=1,
         ph="",
-        tid=-1,
         pid=-1,
         name="N/A",
         cat="N/A",
         ts=0,
-        id=-1,
-        args_id=-1,
     ):
         self.dur = dur
         self.num_calls = num_calls
         self.ph = ph
-        self.tid = tid
         self.pid = pid
         self.name = name
         self.cat = cat
         self.ts = ts
-        self.id = id
-        self.args_id = args_id
 
     def __eq__(self, other):
         if isinstance(other, Event):
@@ -37,18 +31,14 @@ class Event:
             str(self.dur),
             str(self.num_calls),
             self.ph,
-            str(self.tid),
             str(self.pid),
             self.name,
             self.cat,
-            str(self.ts),
-            str(self.id),
-            str(self.args_id),
+            str(self.ts)
         ]
     
     def kdiff_row(self) -> list[str]:
         return [
-            str(self.dur),
             self.name,
             self.cat
         ]
@@ -59,20 +49,16 @@ class Event:
             "dur",
             "# calls",
             "ph",
-            "tid",
             "pid",
             "name",
-            "cat",
-            "ts",
-            "id",
-            "args_id"
+            "category",
+            "timestamp"
         ]
     
     @staticmethod
     def kdiff_header() -> list[str]:
         return [
             "diff",
-            "dur",
             "name",
             "cat"
         ]

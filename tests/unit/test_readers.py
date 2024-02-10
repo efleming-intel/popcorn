@@ -25,30 +25,25 @@ def test_getv(item: dict, prop: str, default: int):
 # test LevelZeroTracerJsonReader
 def test_event_creation_from_zetrace_json():
     item: dict = {
+        "dur": 3459876,
         "ph": "X",
-        "tid": 989081238,
         "pid": 1,
         "name": "gen_conv",
         "cat": "gpu_op",
-        "ts": 87612348765,
-        "id": 12345,
-        "dur": 3459876,
-        "args": { "id": 6547 }
+        "ts": 87612348765
     }
     null = {"nulltest": '\0'}
     reader = LevelZeroTracerJsonReader()
     event = reader.create_event_from_trace_item(item)
     null_event = reader.create_event_from_trace_item(null)
 
+    assert event.dur == item["dur"] and null_event.dur == 0
+    assert event.num_calls == 1 and null_event.num_calls == 1
     assert event.ph == item["ph"] and null_event.ph == "N/A"
-    assert event.tid == item["tid"] and null_event.tid == -1
     assert event.pid == item["pid"] and null_event.pid == -1
     assert event.name == item["name"] and null_event.name == "N/A"
     assert event.cat == item["cat"] and null_event.cat == "N/A"
     assert event.ts == item["ts"] and null_event.ts == -1
-    assert event.id == item["id"] and null_event.id == -1
-    assert event.dur == item["dur"] and null_event.dur == 0
-    assert event.args_id == item["args"]["id"] and null_event.args_id == -1
 
 
 def test_event_retrieval_from_zetrace_json(tmp_path):

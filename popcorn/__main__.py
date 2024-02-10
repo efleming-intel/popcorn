@@ -175,7 +175,6 @@ def main_cli() -> str | None:
             report = Workbook()
         case "console":
             report = Kettle(output_verbosity)
-            print("\nNote: When popcorn outputs to console, it truncates the names in favor of displaying the table more neatly.\nFor the most verbose results, please output to a file.\n")
         case "csv":
             report = CSVArchive()
         case "md":
@@ -200,6 +199,11 @@ def main_cli() -> str | None:
             report_hotspots(cases, report)
 
     report.save(args.o)
+
+    if args.ot == "console":
+        print("\nNote: When popcorn outputs to console, it truncates the names in favor of displaying the table more neatly.\nFor the most verbose results, please output to a file.\n")
+    else:
+        print("\nResults saved to file(s)!")
     return None
 
 

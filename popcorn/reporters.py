@@ -6,8 +6,7 @@ from popcorn.interfaces import Kettle, MDTables, CSVArchive, Verbosity
 from popcorn.structures import Case, Event
 
 
-def _ensure_console_text_fits(row: list[str]) -> list[str]:
-    trunc_limit = 25
+def _ensure_console_text_fits(row: list[str], trunc_limit=45) -> list[str]:
     for i in range(len(row)):
         if (not str(row[i]).isdigit()) and (len(str(row[i])) > trunc_limit):
             row[i] = row[i][:trunc_limit]
@@ -20,24 +19,26 @@ def _report(
     keyrowfn: Callable[..., list[str]],
     sheetnamefn: Callable[[str], str],
     wb: Kettle | MDTables | Workbook | CSVArchive,
-    case_count: list[int]
+    case_count: list[int],
+    trunc_limit: int = 45
 ):
     items = list(result.items())
     if isinstance(wb, Kettle):
         for i in range(len(items)):
-            if wb.verbosity == Verbosity.VERBOSE:
+            print("\n")
+            if (wb.verbosity == Verbosity.VERBOSE) or ((2 * wb.verbosity.limit) >= case_count[i]):
                 print(f"Displaying all {case_count[i]} items:")
             else:
                 print(f"Displaying the most interesting {2 * wb.verbosity.limit} items out of {case_count[i]}:")
+
             wb.print_table(
                 title=sheetnamefn(items[i][0]),
                 fields=header,
                 data=[
-                    _ensure_console_text_fits(keyrowfn(event_row))
+                    _ensure_console_text_fits(keyrowfn(event_row), trunc_limit)
                     for event_row in items[i][1]
                 ],
             )
-            print("\n")
     else:
         count = len(items)
         if (
@@ -77,12 +78,13 @@ def report_kdiff(
     wb: Kettle | MDTables | Workbook | CSVArchive,
 ):
     result = kernel_differences(cases)
-    kdiff_header = ["diff"] + Event.header()
+    kdiff_header = Event.kdiff_header()
     _report(
         result,
         kdiff_header,
-        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].row()),
+        lambda eventdiff: ([str(eventdiff[1])] + eventdiff[0].kdiff_row()),
         _kernel_differences_sheet_name,
         wb,
-        [len(case.events) for case in cases]
+        [len(case.events) for case in cases],
+        100
     )
