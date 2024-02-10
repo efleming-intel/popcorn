@@ -5,6 +5,8 @@ import os
 class Event:
     def __init__(
         self,
+        dur=0,
+        num_calls=0,
         ph="",
         tid=-1,
         pid=-1,
@@ -12,9 +14,10 @@ class Event:
         cat="N/A",
         ts=0,
         id=-1,
-        dur=0,
         args_id=-1,
     ):
+        self.dur = dur
+        self.num_calls = num_calls
         self.ph = ph
         self.tid = tid
         self.pid = pid
@@ -22,7 +25,6 @@ class Event:
         self.cat = cat
         self.ts = ts
         self.id = id
-        self.dur = dur
         self.args_id = args_id
 
     def __eq__(self, other):
@@ -32,6 +34,8 @@ class Event:
 
     def row(self) -> list[str]:
         return [
+            str(self.dur),
+            str(self.num_calls),
             self.ph,
             str(self.tid),
             str(self.pid),
@@ -39,13 +43,39 @@ class Event:
             self.cat,
             str(self.ts),
             str(self.id),
-            str(self.dur),
             str(self.args_id),
+        ]
+    
+    def kdiff_row(self) -> list[str]:
+        return [
+            str(self.dur),
+            self.name,
+            self.cat
         ]
     
     @staticmethod
     def header() -> list[str]:
-        return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
+        return [
+            "dur",
+            "# calls",
+            "ph",
+            "tid",
+            "pid",
+            "name",
+            "cat",
+            "ts",
+            "id",
+            "args_id"
+        ]
+    
+    @staticmethod
+    def kdiff_header() -> list[str]:
+        return [
+            "diff",
+            "dur",
+            "name",
+            "cat"
+        ]
 
 
 class Reader(ABC):

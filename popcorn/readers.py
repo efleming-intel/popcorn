@@ -13,6 +13,7 @@ class LevelZeroTracerJsonReader(Reader):
 
     def create_event_from_trace_item(self, item) -> Event:
         event = Event()
+        event.num_calls = 1
         event.ph = _getv(item, "ph", default="N/A")
         event.tid = _getv(item, "tid")
         event.pid = _getv(item, "pid")
@@ -41,6 +42,7 @@ class LevelZeroTracerJsonReader(Reader):
                         not cat
                     ) or same_category:  # no filter applied or category matches
                         if item_name in unique_events:  # collapse uniques duration
+                            unique_events[item_name].num_calls += 1
                             unique_events[item_name].dur += _getv(
                                 item, "dur", default=0
                             )
