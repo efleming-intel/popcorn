@@ -23,9 +23,9 @@ def test_error_when_no_files_found(tmp_path):
 def test_folder_input(request, tmp_path):
     inputdir = str(os.path.dirname(request.fspath)) + "/data/"
     input_files = [str(inputdir + "trace1.json"), str(inputdir + "trace0.json")]
-    output = str(tmp_path) + "/result"
+    output = tmp_path / "result"
 
-    testargs = ["popcorn", "-f", inputdir, "-ot", "csv", "-o", output]
+    testargs = ["popcorn", "-f", inputdir, "-ot", "csv", "-o", str(output)]
 
     with patch("sys.argv", testargs):
         errors = main_cli()
@@ -40,7 +40,7 @@ def test_folder_input(request, tmp_path):
         )
     ]
     expected_result_files = [
-        os.path.abspath(f"{output}/{name}.csv") for name in expected_result_names
+        (output / f"{name}.csv") for name in expected_result_names
     ]
 
     for expected_file in expected_result_files:
