@@ -13,7 +13,7 @@ import sys
 
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
-from popcorn.readers import LevelZeroTracerJsonReader
+from popcorn.readers import UnitraceJsonReader
 from popcorn.structures import Case
 
 __version__ = "0.0.3"
@@ -103,7 +103,7 @@ def main_cli() -> str | None:
     args = parser.parse_args()
 
     reader = (
-        LevelZeroTracerJsonReader()
+        UnitraceJsonReader()
     )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:

@@ -1,7 +1,7 @@
 import os
 from hypothesis import given, strategies as st
 
-from popcorn.readers import _getv, LevelZeroTracerJsonReader
+from popcorn.readers import _getv, UnitraceJsonReader
 
 
 @given(
@@ -33,7 +33,7 @@ def test_event_creation_from_zetrace_json():
         "ts": 87612348765
     }
     null = {"nulltest": '\0'}
-    reader = LevelZeroTracerJsonReader()
+    reader = UnitraceJsonReader()
     event = reader.create_event_from_trace_item(item)
     null_event = reader.create_event_from_trace_item(null)
 
@@ -62,7 +62,7 @@ def test_event_retrieval_from_zetrace_json(tmp_path):
     with open(input_file_path, "w") as input_file:
         input_file.write(input_json)
     
-    reader = LevelZeroTracerJsonReader()
+    reader = UnitraceJsonReader()
     events = reader.read(input_file_path)
     events_gpu = reader.read(input_file_path, cat="gpu_op")
     events_nu = reader.read(input_file_path, uniques=False)
