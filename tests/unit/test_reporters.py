@@ -52,4 +52,4 @@ def test_kernel_differences_report(tmp_path: PosixPath, trace_names, event_names
     with open(report_path, "r") as output_file:
         output = output_file.readlines()
         assert len(output) == (len(event_names) + 1)
-        assert output[0] == ("diff," + ",".join(Event.header()) + '\n')
+        assert output[0] == (",".join(Event.kdiff_header()) + '\n')

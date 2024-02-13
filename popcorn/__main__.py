@@ -13,10 +13,10 @@ import sys
 
 from popcorn.interfaces import Verbosity, Kettle, MDTables, CSVArchive
 from popcorn.reporters import report_hotspots, report_kdiff
-from popcorn.readers import LevelZeroTracerJsonReader
+from popcorn.readers import UnitraceJsonReader
 from popcorn.structures import Case
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 def main_cli() -> str | None:
@@ -96,18 +96,19 @@ def main_cli() -> str | None:
     parser.add_argument(
         "--version",
         action="version",
+        help="show program version number",
         version="%(prog)s {version}".format(version=__version__),
     )
 
     args = parser.parse_args()
 
     reader = (
-        LevelZeroTracerJsonReader()
+        UnitraceJsonReader()
     )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:
-        args.folders: list[str] = args.files
-        args.files: list[str] = []
+        args.folders = args.files
+        args.files = []
         for folder in args.folders:
             if os.path.exists(os.path.abspath(folder)):
                 supported_files: list[str] = []
@@ -156,11 +157,6 @@ def main_cli() -> str | None:
         if not args.ot:
             args.ot = "xlsx"
 
-    if args.nu:
-        print(
-            "!!! - WARNING - !!!\nIf using large input files in conjunction with --no-uniques,\npopcorn may degrade in performance and even crash!"
-        )
-
     # extract cases from json files
     cases: list[Case] = []
     for input_filename in args.files:
@@ -204,6 +200,11 @@ def main_cli() -> str | None:
             report_hotspots(cases, report)
 
     report.save(args.o)
+
+    if args.ot == "console":
+        print("\nNote: When popcorn outputs to console, it truncates the names in favor of displaying the table more neatly.\nFor the most verbose results, please output to a file.\n")
+    else:
+        print("\nResults saved to file(s)!")
     return None
 
 

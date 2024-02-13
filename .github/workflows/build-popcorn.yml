@@ -14,9 +14,7 @@ permissions:
 
 jobs:
   build_and_test:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
@@ -37,3 +35,5 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov=popcorn tests/
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
