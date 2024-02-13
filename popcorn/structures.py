@@ -5,25 +5,21 @@ import os
 class Event:
     def __init__(
         self,
+        dur=0,
+        num_calls=1,
         ph="",
-        tid=-1,
         pid=-1,
         name="N/A",
         cat="N/A",
         ts=0,
-        id=-1,
-        dur=0,
-        args_id=-1,
     ):
+        self.dur = dur
+        self.num_calls = num_calls
         self.ph = ph
-        self.tid = tid
         self.pid = pid
         self.name = name
         self.cat = cat
         self.ts = ts
-        self.id = id
-        self.dur = dur
-        self.args_id = args_id
 
     def __eq__(self, other):
         if isinstance(other, Event):
@@ -32,20 +28,40 @@ class Event:
 
     def row(self) -> list[str]:
         return [
+            str(self.dur),
+            str(self.num_calls),
             self.ph,
-            str(self.tid),
             str(self.pid),
             self.name,
             self.cat,
-            str(self.ts),
-            str(self.id),
-            str(self.dur),
-            str(self.args_id),
+            str(self.ts)
+        ]
+    
+    def kdiff_row(self) -> list[str]:
+        return [
+            self.name,
+            self.cat
         ]
     
     @staticmethod
     def header() -> list[str]:
-        return ["ph", "tid", "pid", "name", "cat", "ts", "id", "dur", "args_id"]
+        return [
+            "dur",
+            "calls",
+            "ph",
+            "pid",
+            "name",
+            "category",
+            "timestamp"
+        ]
+    
+    @staticmethod
+    def kdiff_header() -> list[str]:
+        return [
+            "diff",
+            "name",
+            "cat"
+        ]
 
 
 class Reader(ABC):
