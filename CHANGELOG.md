@@ -4,7 +4,10 @@ Any notable change to this project will be documented in this file.
 
 ## Unreleased
 
-- replaced json usage with ijson for more stable json file reading and allow reading of large json files.
+- updated README.md
+- added coveralls.io support
+- rehauled console output for a cleaner look
+- replaced json usage with ijson for more stable json file reading and allow reading of large json files
 
 ## [v0.0.2 Release (27-10-2023)](https://github.com/efleming-intel/popcorn/tree/v0.0.2)
 
