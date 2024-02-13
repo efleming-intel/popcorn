@@ -96,6 +96,7 @@ def main_cli() -> str | None:
     parser.add_argument(
         "--version",
         action="version",
+        help="show program version number",
         version="%(prog)s {version}".format(version=__version__),
     )
 
@@ -106,8 +107,8 @@ def main_cli() -> str | None:
     )  # TODO: add more input file formats? and add 'input_type' option to control manually? and autodetect?
 
     if args.folder_input:
-        args.folders: list[str] = args.files
-        args.files: list[str] = []
+        args.folders = args.files
+        args.files = []
         for folder in args.folders:
             if os.path.exists(os.path.abspath(folder)):
                 supported_files: list[str] = []

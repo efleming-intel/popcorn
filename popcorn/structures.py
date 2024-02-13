@@ -47,7 +47,7 @@ class Event:
     def header() -> list[str]:
         return [
             "dur",
-            "# calls",
+            "calls",
             "ph",
             "pid",
             "name",

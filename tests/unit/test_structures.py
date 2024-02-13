@@ -50,7 +50,7 @@ def test_event_row():
 def test_event_header():
     expected_header = [
             "dur",
-            "# calls",
+            "calls",
             "ph",
             "pid",
             "name",
