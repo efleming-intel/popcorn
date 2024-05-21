@@ -67,14 +67,14 @@ def test_event_retrieval_from_zetrace_json(tmp_path):
     events_gpu = reader.read(input_file_path, cat="gpu_op")
     events_nu = reader.read(input_file_path, uniques=False)
 
-    assert len(events) == 4
+    assert len(events) == 2
     assert len(events_gpu) == 2
-    assert len(events_nu) == 5
+    assert len(events_nu) == 3
 
     eigen_name = "eigen::sub"
-    assert events[2].name == eigen_name and (events[3].name == "N/A" and events[3].dur == 0)
-    assert events_nu[2].name == eigen_name and events_nu[3].name == eigen_name
-    assert events[2].dur == 1053 and events_nu[2].dur == 732
+    assert events[1].name == eigen_name
+    assert events_nu[1].name == eigen_name and events_nu[2].name == eigen_name
+    assert events[1].dur == 1053 and events_nu[1].dur == 732
     assert events_gpu[1].name == eigen_name
 
     os.remove(input_file_path)

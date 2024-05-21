@@ -23,6 +23,7 @@ class UnitraceJsonReader(Reader):
         return event
 
     def read(self, filename: str, uniques: bool = True, cat: str | None = None) -> list[Event]:
+        events: list[Event] = []
         if uniques:
             unique_events: dict[str, Event] = {}
 
@@ -44,7 +45,7 @@ class UnitraceJsonReader(Reader):
                                 item_name
                             ] = self.create_event_from_trace_item(item)
 
-            return list(unique_events.values())
+            events = list(unique_events.values())
         else:
             trace_events: list[Event] = []
 
@@ -57,4 +58,6 @@ class UnitraceJsonReader(Reader):
                     ) or same_category:  # no filter applied or category matches
                         trace_events.append(self.create_event_from_trace_item(item))
 
-            return trace_events
+            events = trace_events
+        
+        return list(filter(lambda e : e.dur != 0 , events))
