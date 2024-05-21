@@ -4,6 +4,8 @@ Any notable change to this project will be documented in this file.
 
 ## Unreleased
 
+- filter out processes that lack a duration
+
 ## [v0.0.3 Release (13-02-2024)](https://github.com/efleming-intel/popcorn/tree/v0.0.3)
 
 - updated README.md
