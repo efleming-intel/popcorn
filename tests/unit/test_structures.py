@@ -7,8 +7,6 @@ def test_initialized_event_defaults():
     event = Event()
     assert event.dur == 0
     assert event.num_calls == 1
-    assert event.ph == ""
-    assert event.pid == -1
     assert event.name == "N/A"
     assert event.cat == "N/A"
     assert event.ts == 0
@@ -19,15 +17,14 @@ def test_event_equivalence():
     other = Event(name="test", dur=654)
     another = Event(name="other")
 
-    assert event == other and event != event.row()
+    assert event == other and event != event.hotspot_row()
     assert event != another
 
 
 def test_event_row():
     event_dict: dict[str, str | int] = {
         "dur": 3459876,
-        "ph": "X",
-        "pid": 1,
+        "calls": 1,
         "name": "gen_conv",
         "cat": "gpu_op",
         "ts": 87612348765
@@ -36,7 +33,7 @@ def test_event_row():
     for prop in event_dict.keys():
         setattr(event, prop, event_dict[prop])
     
-    result_row = event.row()
+    result_row = event.hotspot_row()
 
     expected_vals = list(event_dict.values())
 
@@ -48,11 +45,9 @@ def test_event_row():
 
 
 def test_event_header():
-    expected_header = [
+    expected_hotspot_header = [
             "dur",
             "calls",
-            "ph",
-            "pid",
             "name",
             "category",
             "timestamp"
@@ -60,15 +55,15 @@ def test_event_header():
     expected_kdiff_header = [
             "diff",
             "name",
-            "cat"
+            "category"
         ]
-    actual_header = Event.header()
+    actual_hotspot_header = Event.hotspot_header()
     actual_kdiff_header = Event.kdiff_header()
 
-    for s in expected_header:
-        assert s in actual_header
-    for s in actual_header:
-        assert s in expected_header
+    for s in expected_hotspot_header:
+        assert s in actual_hotspot_header
+    for s in actual_hotspot_header:
+        assert s in expected_hotspot_header
 
     for s in expected_kdiff_header:
         assert s in actual_kdiff_header

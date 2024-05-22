@@ -26,12 +26,10 @@ class Event:
             return self.name == other.name
         return False
 
-    def row(self) -> list[str]:
+    def hotspot_row(self) -> list[str]:
         return [
             str(self.dur),
             str(self.num_calls),
-            self.ph,
-            str(self.pid),
             self.name,
             self.cat,
             str(self.ts)
@@ -44,12 +42,10 @@ class Event:
         ]
     
     @staticmethod
-    def header() -> list[str]:
+    def hotspot_header() -> list[str]:
         return [
             "dur",
             "calls",
-            "ph",
-            "pid",
             "name",
             "category",
             "timestamp"
@@ -60,7 +56,7 @@ class Event:
         return [
             "diff",
             "name",
-            "cat"
+            "category"
         ]
 
 

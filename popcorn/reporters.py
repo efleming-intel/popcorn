@@ -65,8 +65,8 @@ def report_hotspots(
     cases: list[Case], wb: Kettle | MDTables | Workbook | CSVArchive
 ):
     result = hotspots(cases)
-    hotspot_header = Event.header()
-    _report(result, hotspot_header, lambda e: e.row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
+    hotspot_header = Event.hotspot_header()
+    _report(result, hotspot_header, lambda e: e.hotspot_row(), _hotspots_sheet_name, wb, [len(case.events) for case in cases])
 
 
 def _kernel_differences_sheet_name(item_name: str) -> str:

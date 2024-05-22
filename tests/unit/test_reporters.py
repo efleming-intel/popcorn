@@ -27,9 +27,9 @@ def test_hotspots_report(tmp_path: PosixPath, trace_name: str, event_names: list
     assert os.path.exists(report_path)
     with open(report_path, "r") as output_file:
         output = output_file.readlines()
-        assert output[0] == (",".join(Event.header()) + '\n')
+        assert output[0] == (",".join(Event.hotspot_header()) + '\n')
         for event in events:
-            assert (",".join(event.row()) + '\n') in output
+            assert (",".join(event.hotspot_row()) + '\n') in output
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])

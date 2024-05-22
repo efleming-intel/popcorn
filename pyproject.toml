@@ -5,7 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "popcorn"
 version = "0.0.3"
-authors = [{ name = "Ethan Fleming", email = "ethan.fleming@intel.com" }]
+authors = [
+    { name = "Ethan Fleming", email = "ethan.fleming@intel.com" },
+    { name = "Orel Yehuda", email = "orel.yehuda@intel.com" }
+    ]
 description = "cross-platform kernel trace analyzer"
 dynamic = ["readme"]
 requires-python = ">=3.10"
